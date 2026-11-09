@@ -16,10 +16,9 @@ export function ControlsList({ game }: { game: Game }) {
       </div>
       {game.controls.length ? (
         <>
-          <p className="section-intro">
-            Keyboard and mouse required. Click inside the game to capture your
-            mouse; Escape releases it. Rebind keys in Settings → Controls.
-          </p>
+          {game.controlsNote && (
+            <p className="section-intro">{game.controlsNote}</p>
+          )}
           <dl className="controls-grid">
             {game.controls.map((control) => (
               <div key={control.action}>
