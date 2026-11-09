@@ -1,0 +1,31 @@
+name: Lighthouse
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-lh-next-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**', 'next.config.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-lh-next-${{ hashFiles('package-lock.json') }}-
+      - run: npm ci
+      - run: npm run build
+      - name: Mobile Lighthouse and public report links
+        run: npm run lighthouse
+      - name: Add reports to check summary
+        if: always()
+        run: node scripts/lighthouse-summary.mjs
