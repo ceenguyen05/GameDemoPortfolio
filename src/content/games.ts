@@ -85,7 +85,27 @@ export const games: Game[] = validateGames([
         height: 720,
       },
     ],
-    changelog: [{"version":"1.7.6","date":"2026-11-09","notes":["Search & Destroy: competitive bomb defusal, buy phases, round economy, halftime side swaps, and offline bot matches from 1v1 to 5v5.","Two hand-built maps: ACI HQ's offices and factory floor, and ACI Building 2's engineering offices. Map selection and randomized round spawns.","Zombies: ACI HQ: Outbreak. Solo or co-op squads of up to five, with friends or bots, wave survival, Endless mode, revives, and a helicopter exfil.","22 original guns plus a knife across eight classes. Learnable spray patterns, hit groups, range falloff, and penetration through wood, glass, and thin metal.","Gunsmith with up to five attachments per gun, including optics, muzzles, grips, lasers, magazines, and ammunition types.","Source-style movement: counter-strafing, air-strafing, crouch-jumps, slides, prone, mantling, and leaning.","Frags, flashbangs, smokes, Molotovs, and Recon Pulse. Drones, sticky cameras, trip mines, barbed wire, shields, EMP, and building CCTV.","Fortify and breach doorways with barricades, a crowbar, and C4. UAV, Counter-UAV, Hunter Drone, and a steerable Cruise Missile killstreak.","Zombies progression: ten enemy types, 14 wall weapons, Mystery Box, Disruptor wonder weapon, Prototype Forge upgrades, eight perks, seven power-ups, and the Armory.","Team-aware bots that buy, use utility, plant, defuse, rotate, and retake, with four difficulty levels in both modes.","Online casual and ranked Search & Destroy, private rooms with five-digit invite codes, bot-filled slots, placements, Iron-to-Champion ranks, career XP, levels, and daily-play rewards.","Operator and weapon-finish customization, live 3D previews, pings, final killcam, clutch and ACE callouts, and an optional animated character paper doll.","Procedural models, animation, and audio; baked global illumination; Low, Medium, and High graphics presets; rebindable controls and configurable aim assist."]}],
+    changelog: [
+      {
+        version: "1.7.6",
+        date: "2026-11-09",
+        notes: [
+          "Search & Destroy: competitive bomb defusal, buy phases, round economy, halftime side swaps, and offline bot matches from 1v1 to 5v5.",
+          "Two hand-built maps: ACI HQ's offices and factory floor, and ACI Building 2's engineering offices. Map selection and randomized round spawns.",
+          "Zombies: ACI HQ: Outbreak. Solo or co-op squads of up to five, with friends or bots, wave survival, Endless mode, revives, and a helicopter exfil.",
+          "22 original guns plus a knife across eight classes. Learnable spray patterns, hit groups, range falloff, and penetration through wood, glass, and thin metal.",
+          "Gunsmith with up to five attachments per gun, including optics, muzzles, grips, lasers, magazines, and ammunition types.",
+          "Source-style movement: counter-strafing, air-strafing, crouch-jumps, slides, prone, mantling, and leaning.",
+          "Frags, flashbangs, smokes, Molotovs, and Recon Pulse. Drones, sticky cameras, trip mines, barbed wire, shields, EMP, and building CCTV.",
+          "Fortify and breach doorways with barricades, a crowbar, and C4. UAV, Counter-UAV, Hunter Drone, and a steerable Cruise Missile killstreak.",
+          "Zombies progression: ten enemy types, 14 wall weapons, Mystery Box, Disruptor wonder weapon, Prototype Forge upgrades, eight perks, seven power-ups, and the Armory.",
+          "Team-aware bots that buy, use utility, plant, defuse, rotate, and retake, with four difficulty levels in both modes.",
+          "Online casual and ranked Search & Destroy, private rooms with five-digit invite codes, bot-filled slots, placements, Iron-to-Champion ranks, career XP, levels, and daily-play rewards.",
+          "Operator and weapon-finish customization, live 3D previews, pings, final killcam, clutch and ACE callouts, and an optional animated character paper doll.",
+          "Procedural models, animation, and audio; baked global illumination; Low, Medium, and High graphics presets; rebindable controls and configurable aim assist.",
+        ],
+      },
+    ],
   },
   ...["02", "03"].map((slot): Game => ({
     slug: `coming-soon-${slot}`,

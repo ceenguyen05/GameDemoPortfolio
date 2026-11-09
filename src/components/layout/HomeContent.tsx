@@ -30,7 +30,8 @@ export function HomeContent() {
         <div>
           <h2>
             Made by one person.
-            <br />Built to be played.
+            <br />
+            Built to be played.
           </h2>
           <p>
             I’m Casey, a software engineer building games for the browser. This

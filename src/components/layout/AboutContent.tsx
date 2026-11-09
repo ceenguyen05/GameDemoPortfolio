@@ -42,9 +42,7 @@ export function AboutContent() {
           <a href={`mailto:${siteConfig.email}`}>
             <span>
               Email
-              <small>
-                {siteConfig.email}
-              </small>
+              <small>{siteConfig.email}</small>
             </span>
             <span aria-hidden="true">↗</span>
           </a>

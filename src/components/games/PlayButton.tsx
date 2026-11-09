@@ -22,8 +22,8 @@ export function PlayButton({
       <a
         className="play-button"
         href={game.playUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        target="_blank"
+        rel="noopener noreferrer"
         aria-label={`Play now: ${game.title} (opens in a new tab)`}
       >
         <span aria-hidden="true" className="play-triangle">
@@ -35,7 +35,8 @@ export function PlayButton({
         </span>
       </a>
       <span className="destination">
-        {new URL(game.playUrl).hostname} <span aria-hidden="true">↗</span><span className="launch-note">Opens in a new tab</span>
+        {new URL(game.playUrl).hostname} <span aria-hidden="true">↗</span>
+        <span className="launch-note">Opens in a new tab</span>
       </span>
     </div>
   );
