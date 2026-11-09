@@ -1,4 +1,4 @@
-import { statusLabels } from "@/components/ui/Tag";
+import { statusLabels } from "@/lib/gameStatus";
 import type { Game } from "@/types/game";
 export function PlayButton({
   game,

@@ -1,5 +1,5 @@
 import Link from "next/link";
-export function NotFoundContent() {
+export function NotFoundView() {
   return (
     <section className="not-found">
       <p className="eyebrow accent-text">404 / Page not found</p>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/siteConfig";
-export function AboutContent() {
+export function AboutView() {
   return (
     <>
       <div className="breadcrumb eyebrow">

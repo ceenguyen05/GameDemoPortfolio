@@ -1,9 +1,9 @@
 import { PageShell } from "@/components/layout/PageShell";
-import { NotFoundContent } from "@/components/layout/NotFoundContent";
+import { NotFoundView } from "@/components/views/NotFoundView";
 export default function NotFound() {
   return (
     <PageShell>
-      <NotFoundContent />
+      <NotFoundView />
     </PageShell>
   );
 }

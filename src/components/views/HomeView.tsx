@@ -2,7 +2,7 @@ import Link from "next/link";
 import { games } from "@/content/games";
 import { GameHero } from "@/components/games/GameHero";
 import { GameGrid } from "@/components/games/GameGrid";
-export function HomeContent() {
+export function HomeView() {
   const featured = games.find((game) => game.status === "live") ?? games[0];
   return (
     <>
