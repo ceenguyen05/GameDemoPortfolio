@@ -21,7 +21,11 @@ These override the original text where they conflict.
    - ACI: Series 1: release date is today (2026-11-09). The changelog has one entry,
      version 1.7.6 dated 2026-11-09, whose notes list all the game's features.
    - Future games: keep simple "Coming soon" cards for a Devil Game, a 2–6 player
-     obby game, and a Moon Sweeper game.
+     obby game, and a Moon Sweeper game. Later confirmed: these are three separate
+     games, all shown as working titles. Moon Sweeper's description stays minimal
+     ("In the works").
+   - ACI gallery: keep the current screenshots (which show debug HUD values) until
+     clean captures replace them.
 
 ---
 

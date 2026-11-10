@@ -1,57 +1,61 @@
 # Casey Nguyen / Games
 
-A hub for my browser-first games, linking players straight to each game's live site.
+A hub for my browser-first games that links players straight to each game's live site.
 
-![The game portfolio home page](docs/screenshot.png)
+![The hub's home page: featured game and the game library](docs/screenshot.png)
 
-Live: **TODO(casey): add the hub's production URL after connecting Vercel.**  
+**Live:** <https://gamedemoportfolio.vercel.app>
 [![CI](https://github.com/ceenguyen05/GameDemoPortfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/ceenguyen05/GameDemoPortfolio/actions/workflows/ci.yml)
 
 ## Games
 
-| Game            | Status      | Play                                           |
-| --------------- | ----------- | ---------------------------------------------- |
-| ACI: Series 1   | Live        | [Launch game](https://aci-series1.vercel.app/) |
-| Classified / 02 | Coming soon | Locked                                         |
-| Classified / 03 | Coming soon | Locked                                         |
+| Game            | Status      | Play                                                      |
+| --------------- | ----------- | --------------------------------------------------------- |
+| ACI: Series 1   | Live        | [aci-series1.vercel.app](https://aci-series1.vercel.app/) |
+| Devil Game\*    | Coming soon | —                                                         |
+| Untitled obby\* | Coming soon | —                                                         |
+| Moon Sweeper\*  | Coming soon | —                                                         |
+
+\*Working title.
 
 ## Tech stack
 
-Next.js App Router · strict TypeScript · Tailwind CSS · Motion · Node 22 · npm.
+Next.js 16 (App Router, fully static) · TypeScript · Tailwind CSS 4 · Motion · Node 22 · npm
 
 ## Run locally
 
-Prerequisite: Node 22 (see `.nvmrc`).
+Requires Node 22 (see `.nvmrc`).
 
 ```sh
-npm ci
-npm run dev
+npm install
+npm run dev     # http://localhost:3000
 npm run build
 ```
 
 ## Add a game
 
-Add one entry to `src/content/games.ts` and its assets to `public/games/<slug>/`.
-Routes, launch redirects, commands, and the sitemap follow the data; see [Adding a game](docs/ADDING_A_GAME.md).
+Add one entry to `src/content/games.ts` and its images to `public/games/<slug>/`.
+The game page, `/play/<slug>` share link, command palette entry, sitemap, and social
+image all come from that entry. See [docs/ADDING_A_GAME.md](docs/ADDING_A_GAME.md).
 
 ## Project structure
 
 ```text
-.github/        CI, Lighthouse, dependency updates
-docs/           Design, content, deployment, decisions
-public/         Game images and icons
-scripts/        Content validation and link checks
-tests/          Content contracts and browser checks
+.github/        CI, Lighthouse, Dependabot, PR template
+docs/           Design, deploying, decisions, spec, handoff audit
+public/         Game art (games/<slug>/) and icons
+scripts/        Asset validation and live-link check
+tests/          Catalog unit tests and browser checks
 src/
-  app/          Static routes and metadata
-  components/   UI, layout, games, command palette
-  content/      Typed game catalog
-  hooks/        Dialog and sound behavior
-  lib/          Validation, redirects, site config, OG
-  styles/       Tokens and responsive styling
-  types/        Shared content types
+  app/          Routes, metadata, OG images, sitemap, robots
+  components/   ui, layout, games, command-palette, views
+  content/      games.ts: the catalog
+  hooks/        Dialog, sound, platform detection
+  lib/          Validation, redirects, formatting, site config
+  styles/       Design tokens and global CSS
+  types/        Game and command types
 ```
 
 [Deploying](docs/DEPLOYING.md) · [Design](docs/DESIGN.md) · [Decisions and TODOs](docs/DECISIONS.md)
 
-Casey Nguyen · [GitHub](https://github.com/ceenguyen05)
+Casey Nguyen · [github.com/ceenguyen05](https://github.com/ceenguyen05)

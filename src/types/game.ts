@@ -26,6 +26,8 @@ export type ChangelogEntry = {
 type GameBase = {
   slug: string;
   title: string;
+  /** Show a "Working title" label wherever the title appears prominently. */
+  workingTitle?: boolean;
   tagline: string;
   description: { short: string; long: string };
   genre: string[];

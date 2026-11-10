@@ -7,6 +7,17 @@ updates:
     groups:
       npm-minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # The runtime is Node 22 (.nvmrc, engines); keep its types on 22.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # eslint-config-next's React, a11y and import plugins support ESLint 9 at most.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      # typescript-eslint (via eslint-config-next) supports TypeScript < 6.1.
+      - dependency-name: typescript
+        update-types:
+          ["version-update:semver-major", "version-update:semver-minor"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

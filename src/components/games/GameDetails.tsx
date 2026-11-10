@@ -1,91 +1,81 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import type { Game } from "@/types/game";
 import { GameHero } from "@/components/games/GameHero";
+import { GameFacts } from "@/components/games/GameFacts";
 import { Gallery } from "@/components/games/Gallery";
 import { ControlsList } from "@/components/games/ControlsList";
+import { Changelog } from "@/components/games/Changelog";
 import { PlayButton } from "@/components/games/PlayButton";
+import { Button } from "@/components/ui/Button";
+import { statusLabels } from "@/lib/gameStatus";
+
 export function GameDetails({ game }: { game: Game }) {
+  const live = game.status === "live";
   return (
-    <div style={{ "--game-accent": game.accentColor } as CSSProperties}>
-      <div className="breadcrumb eyebrow">
-        <Link href="/#library">← Game library</Link>
-        <span>{game.slug}</span>
-      </div>
+    <div style={{ "--game": game.accentColor } as CSSProperties}>
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center justify-between gap-4 py-4"
+      >
+        <Link
+          href="/#library"
+          className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-muted hover:text-ink"
+        >
+          <span aria-hidden="true">←</span> Library
+        </Link>
+        <span className="font-mono text-xs break-all text-muted">
+          games/{game.slug}
+        </span>
+      </nav>
+
       <GameHero game={game} />
-      <section className="briefing">
-        <p className="eyebrow accent-text">About this game</p>
-        <h2>{game.tagline}</h2>
-        <p>{game.description.long}</p>
-        <div className="genre-tags">
-          {game.genre.map((genre) => (
-            <span key={genre}>{genre}</span>
-          ))}
-        </div>
-      </section>
-      <Gallery images={game.screenshots} />
-      <ControlsList game={game} />
-      <section className="technical-record" aria-labelledby="record-title">
-        <div>
-          <p className="eyebrow accent-text">Made with</p>
-          <h2 id="record-title">Behind the game.</h2>
-          <div className="tech-tags">
-            {game.techStack.length ? (
-              game.techStack.map((tech) => <span key={tech}>{tech}</span>)
-            ) : (
-              <p>Stack not announced.</p>
-            )}
+
+      <div className="grid gap-16 pt-section lg:grid-cols-12 lg:gap-6">
+        <aside aria-label="Fact sheet" className="lg:col-span-4 xl:col-span-3">
+          <div className="lg:sticky lg:top-6">
+            <GameFacts game={game} />
           </div>
-          {game.repoUrl && (
-            <a className="text-link" href={game.repoUrl}>
-              Read the source on GitHub ↗
-            </a>
-          )}
-          {game.releaseDate && (
-            <p className="eyebrow">
-              Released{" "}
-              <time dateTime={game.releaseDate}>{game.releaseDate}</time>
-            </p>
-          )}
+        </aside>
+        <div className="space-y-section lg:col-span-8 lg:col-start-5">
+          <section aria-labelledby="overview-title">
+            <h2 id="overview-title" className="label border-t border-ink pt-3">
+              Overview
+            </h2>
+            <p className="mt-6 max-w-3xl text-lead">{game.description.long}</p>
+          </section>
+          <Gallery images={game.screenshots} />
+          <ControlsList game={game} />
+          <Changelog entries={game.changelog ?? []} />
         </div>
-        <div className="changelog">
-          <h3>Release notes</h3>
-          {game.changelog?.length ? (
-            game.changelog.map((entry) => (
-              <article key={entry.version}>
-                <h4>
-                  {entry.version}{" "}
-                  <time dateTime={entry.date}>{entry.date}</time>
-                </h4>
-                <ul>
-                  {entry.notes.map((note) => (
-                    <li key={note}>{note}</li>
-                  ))}
-                </ul>
-              </article>
-            ))
-          ) : (
-            <p>
-              {game.status === "live"
-                ? "Public release notes have not been published here yet. Follow the repository for development history."
-                : "No releases yet."}
-            </p>
-          )}
-          {game.trailerUrl && (
-            <a href={game.trailerUrl} className="text-link">
-              Watch trailer ↗
-            </a>
-          )}
-        </div>
-      </section>
-      <section className="closing-launch">
-        <div>
-          <p className="eyebrow">Ready when you are</p>
-          <h2>
-            {game.status === "live" ? "Give it a play." : "More to come."}
+      </div>
+
+      <section
+        aria-labelledby="launch-title"
+        className="defer-render mt-section grid gap-8 border border-t-4 border-line border-t-game bg-surface p-6 sm:p-10 lg:grid-cols-12 lg:items-center"
+      >
+        <div className="lg:col-span-7">
+          <p className="label text-muted">
+            {live ? "Ready when you are" : statusLabels[game.status]}
+          </p>
+          <h2 id="launch-title" className="mt-3 text-h2">
+            {live ? `Play ${game.title}.` : "Not playable yet."}
           </h2>
+          <p className="mt-3 text-muted">
+            {live
+              ? "It opens in a new tab, so this page stays right here."
+              : "It gets a Play button here the day it goes live."}
+          </p>
         </div>
-        <PlayButton game={game} />
+        <div className="lg:col-span-5 lg:justify-self-end">
+          {live ? (
+            <PlayButton game={game} />
+          ) : (
+            <Button href="/#library">
+              Back to the library <span aria-hidden="true">→</span>
+            </Button>
+          )}
+        </div>
       </section>
     </div>
   );

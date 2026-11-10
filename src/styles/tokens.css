@@ -1,0 +1,27 @@
+/* Design tokens. Values and contrast notes live in docs/DESIGN.md. */
+:root {
+  --paper: #f4f3ee;
+  --surface: #ffffff;
+  --sunken: #e9e8e1;
+  --ink: #1b2220;
+  --muted: #5c635e;
+  --line: #d6d9d2;
+  --line-strong: #aab1a8;
+  --signal: #24574b;
+
+  /* Each game's card and pages override this with its accentColor. */
+  --game: var(--signal);
+
+  --content: 1440px;
+  --gutter: clamp(16px, 4vw, 56px);
+  --space-section: 96px;
+  --press: 4px;
+
+  color-scheme: light;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --space-section: 64px;
+  }
+}

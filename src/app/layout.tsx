@@ -1,40 +1,43 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, IBM_Plex_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Manrope } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/lib/siteConfig";
 import "@/styles/globals.css";
-const display = Manrope({
-  weight: ["600", "800"],
+
+const sans = Manrope({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-sans",
   display: "swap",
 });
+
+// Mono is small metadata text, so one weight is enough. It stays preloaded:
+// without the preload its late swap caused a measurable layout shift.
 const mono = IBM_Plex_Mono({
-  weight: ["400"],
+  weight: "400",
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
 });
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: { default: siteConfig.name, template: "%s | Casey Nguyen / Games" },
+  title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
   description: siteConfig.description,
   applicationName: siteConfig.name,
   authors: [{ name: "Casey Nguyen", url: siteConfig.github }],
+  creator: "Casey Nguyen",
   openGraph: {
-    title: siteConfig.name,
-    description: siteConfig.description,
     type: "website",
     siteName: siteConfig.name,
     locale: "en_US",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+    title: siteConfig.name,
+    description: siteConfig.description,
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: ["/opengraph-image"],
   },
   icons: {
     icon: [
@@ -43,21 +46,25 @@ export const metadata: Metadata = {
     ],
     apple: "/icons/apple-touch-icon.png",
   },
-  manifest: "/manifest.webmanifest",
 };
+
 export const viewport: Viewport = {
   themeColor: "#f4f3ee",
   colorScheme: "light",
 };
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${display.variable} ${mono.variable}`}>
-      <body>
-        <a href="#main" className="skip-link">
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+      <body className="flex min-h-dvh flex-col">
+        <a
+          href="#main"
+          className="fixed top-3 left-3 z-50 -translate-y-24 bg-ink px-4 py-3 text-sm font-semibold text-paper focus:translate-y-0"
+        >
           Skip to content
         </a>
         <Header />

@@ -122,12 +122,16 @@ export const games: Game[] = validateGames([
     ],
   },
 
-  // Upcoming games. Casey asked for simple "Coming soon" cards for these three.
-  // Only the names and the player count below come from Casey; everything else
-  // stays empty until confirmed. The cover art is placeholder SVG made for the hub.
+  // Upcoming games, confirmed by Casey as three separate projects, each shown
+  // under a working title. Only the names and the player count come from Casey;
+  // everything else stays empty until confirmed.
+  // TODO(casey): when a name is final, update `title` and drop `workingTitle`.
+  // TODO(casey): each cover.svg is placeholder art made for the hub; replace with
+  // a 1280×720 cover.webp when real art exists.
   {
     slug: "devil-game",
-    title: "Devil Game", // TODO(casey): confirm the public or working title.
+    title: "Devil Game",
+    workingTitle: true,
     tagline: "Next on the workbench.",
     description: {
       short: "Coming soon. Details arrive with the first playable build.",
@@ -151,7 +155,8 @@ export const games: Game[] = validateGames([
   },
   {
     slug: "untitled-obby",
-    title: "Untitled obby", // TODO(casey): add the game's name.
+    title: "Untitled obby",
+    workingTitle: true,
     tagline: "An obstacle course for 2–6 players.",
     description: {
       short:
@@ -177,11 +182,11 @@ export const games: Game[] = validateGames([
   {
     slug: "moon-sweeper",
     title: "Moon Sweeper",
+    workingTitle: true,
+    // Casey chose to keep the description minimal for now; add a pitch when ready.
     tagline: "In the works.",
     description: {
       short: "Coming soon. Details arrive with the first playable build.",
-      // TODO(casey): Moon Sweeper was described as a remake of a Roblox game.
-      // Add a one-line pitch you're happy to make public.
       long: "Moon Sweeper is in the works. Genre, controls, and screenshots land here with the first playable build.",
     },
     status: "coming-soon",

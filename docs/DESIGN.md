@@ -56,16 +56,16 @@ Scale (`tailwind.config.ts` → `fontSize`):
 
 Light, warm, and neutral. Contrast ratios are measured against `paper`.
 
-| Token         | Value     | Use                                               | Contrast |
-| ------------- | --------- | ------------------------------------------------- | -------- |
-| `paper`       | `#f4f3ee` | Page background                                   | —        |
-| `surface`     | `#ffffff` | Raised panels: featured hero, hover rows, dialogs | —        |
-| `sunken`      | `#e9e8e1` | Keycaps, locked controls, image wells             | —        |
-| `ink`         | `#1b2220` | Text, Play button, primary rules                  | 14.6:1   |
-| `muted`       | `#5c635e` | Secondary text (5.0:1 even on `sunken`)           | 5.6:1    |
-| `line`        | `#d6d9d2` | Hairlines                                         | —        |
-| `line-strong` | `#aab1a8` | Keycap edges, input borders                       | —        |
-| `signal`      | `#24574b` | The hub's one accent: live status, focus, links   | 7.4:1    |
+| Token         | Value     | Use                                             | Contrast |
+| ------------- | --------- | ----------------------------------------------- | -------- |
+| `paper`       | `#f4f3ee` | Page background                                 | —        |
+| `surface`     | `#ffffff` | Raised panels: game hero, launch band, dialogs  | —        |
+| `sunken`      | `#e9e8e1` | Keycaps, locked controls, image wells           | —        |
+| `ink`         | `#1b2220` | Text, Play button, primary rules                | 14.6:1   |
+| `muted`       | `#5c635e` | Secondary text (5.0:1 even on `sunken`)         | 5.6:1    |
+| `line`        | `#d6d9d2` | Hairlines                                       | —        |
+| `line-strong` | `#aab1a8` | Keycap edges, input borders                     | —        |
+| `signal`      | `#24574b` | The hub's one accent: live status, focus, links | 7.4:1    |
 
 **Game accent (`--game`).** Each card and game page sets `--game` from its
 `accentColor`. It appears only as fills and rules: the catalog swatch, a 4px top rule on
@@ -107,7 +107,8 @@ The most distinct control on any page, and the only element with a shadow.
 
 - Ink slab with white Manrope 700 text "Play now". On the left, a square **launch
   block** in the game's accent holds an ink ▶. A ↗ on the right signals a new tab.
-- **Press:** a 4px hard offset shadow in `ink` sits under the slab. On `:active` the
+- **Press:** a 4px hard offset shadow in the game's accent sits under the slab, like
+  the base of a key. On `:active` the
   slab drops 4px and the shadow collapses to 0 in 60ms, like a physical key bottoming
   out. Hover nudges the ↗ 2px up and to the right.
 - Always paired with a mono destination label (`aci-series1.vercel.app ↗ · new tab`).
@@ -126,7 +127,7 @@ Motion acts like a game menu: instant feedback, short travel, no floating.
 | --------------------- | ------------------------------------ | ----------------- |
 | Play press            | translateY 4px, shadow 4px → 0       | 60ms linear       |
 | Card hover / focus    | cover crossfades to first screenshot | 200ms ease-out    |
-| Card hover / focus    | row background paper → surface       | 120ms             |
+| Card hover            | title underlines                     | instant           |
 | Command palette open  | fade + 4px drop (Motion, lazy)       | 120ms ease-out    |
 | Lightbox image change | none; cuts instantly                 | —                 |
 | Filters               | none; rows show or hide instantly    | —                 |

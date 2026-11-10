@@ -4,62 +4,69 @@ import type { CSSProperties } from "react";
 import type { Game } from "@/types/game";
 import { Tag } from "@/components/ui/Tag";
 import { PlayButton } from "@/components/games/PlayButton";
-export function GameCard({ game, index }: { game: Game; index: number }) {
+import { catalogNumber } from "@/lib/format";
+
+/**
+ * One catalog row. The title link stretches over the whole row (details page);
+ * the Play control sits above it so both stay separately reachable.
+ * Hover or keyboard focus crossfades the cover to the first screenshot.
+ */
+export function GameCard({ game, position }: { game: Game; position: number }) {
+  const number = catalogNumber(position);
+  const alternate = game.screenshots[0];
   return (
-    <article
-      className={`game-card ${game.status === "live" ? "live-card" : "classified-card"}`}
-      style={{ "--game-accent": game.accentColor } as CSSProperties}
+    <li
+      data-status={game.status}
+      style={{ "--game": game.accentColor } as CSSProperties}
+      className="group relative grid gap-4 border-t border-line py-6 lg:grid-cols-12 lg:gap-6 lg:py-8"
     >
-      <Link
-        href={`/games/${game.slug}`}
-        className="card-image-link"
-        aria-label={`Game / ${String(index + 1).padStart(2, "0")}: View ${game.title} details`}
-      >
-        <div className="card-image">
+      <div className="flex items-center gap-3 lg:col-span-1 lg:flex-col lg:items-start">
+        <span aria-hidden="true" className="size-3 bg-game" />
+        <span className="label text-muted">No. {number}</span>
+      </div>
+
+      <div className="relative aspect-video overflow-hidden bg-sunken lg:col-span-4">
+        <Image
+          src={game.coverImage.src}
+          alt={game.coverImage.alt}
+          fill
+          sizes="(min-width: 1440px) 440px, (min-width: 1024px) 31vw, 100vw"
+          className="object-cover"
+        />
+        {alternate && (
           <Image
-            src={game.coverImage.src}
-            alt={game.coverImage.alt}
+            src={alternate.src}
+            alt=""
             fill
-            sizes="(max-width: 760px) 100vw, 50vw"
+            sizes="(min-width: 1440px) 440px, (min-width: 1024px) 31vw, 100vw"
+            className="object-cover opacity-0 transition-opacity duration-200 ease-out group-focus-within:opacity-100 group-hover:opacity-100 motion-reduce:hidden"
           />
-          {game.screenshots[0] && (
-            <Image
-              src={game.screenshots[0].src}
-              alt=""
-              fill
-              sizes="(max-width: 760px) 100vw, 50vw"
-              className="card-alternate"
-            />
-          )}
-          <span className="card-index eyebrow">
-            GAME / {String(index + 1).padStart(2, "0")}
-          </span>
-          <span className="card-open" aria-hidden="true">
-            ↗
-          </span>
-        </div>
-      </Link>
-      <div className="card-body">
-        <Tag status={game.status} />
-        <h3>
-          <Link href={`/games/${game.slug}`}>{game.title}</Link>
-        </h3>
-        <p>{game.description.short}</p>
-        <div className="card-actions">
-          {game.status === "live" ? (
-            <PlayButton game={game} compact />
-          ) : (
-            <span className="locked-label">⊠ &nbsp; Not available yet</span>
-          )}
+        )}
+      </div>
+
+      <div className="lg:col-span-4">
+        <h3 className="text-h3">
           <Link
             href={`/games/${game.slug}`}
-            className="text-link"
-            aria-label={`Read ${game.title} details`}
+            className="stretched decoration-2 underline-offset-4 group-hover:underline"
           >
-            Details ↗
+            {game.title}
           </Link>
-        </div>
+        </h3>
+        {game.workingTitle && (
+          <p className="label mt-1 text-muted">Working title</p>
+        )}
+        <p className="mt-2 font-semibold">{game.tagline}</p>
+        <p className="mt-2 text-sm text-muted">{game.description.short}</p>
+        {game.genre.length > 0 && (
+          <p className="label mt-4 text-muted">{game.genre.join(" · ")}</p>
+        )}
       </div>
-    </article>
+
+      <div className="relative z-10 flex flex-col items-start gap-4 lg:col-span-3">
+        <Tag status={game.status} />
+        <PlayButton game={game} size="md" />
+      </div>
+    </li>
   );
 }

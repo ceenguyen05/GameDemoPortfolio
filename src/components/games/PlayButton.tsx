@@ -1,43 +1,69 @@
-import { statusLabels } from "@/lib/gameStatus";
 import type { Game } from "@/types/game";
+import { statusLabels } from "@/lib/gameStatus";
+import { hostname } from "@/lib/format";
+
+/**
+ * The launch control. Live games get a real anchor to the game's own site,
+ * opened in a new tab so the hub stays put; nothing is JavaScript-driven.
+ * Games that aren't live get a disabled control with their status.
+ */
 export function PlayButton({
   game,
-  compact = false,
+  size = "lg",
 }: {
   game: Game;
-  compact?: boolean;
+  size?: "lg" | "md";
 }) {
   if (game.status !== "live")
     return (
-      <div className="launch-group">
-        <button type="button" className="play-button locked" disabled>
-          <span aria-hidden="true">⊠</span>
+      <div className="flex flex-col items-start gap-2">
+        <button
+          type="button"
+          disabled
+          className="inline-flex min-h-12 cursor-not-allowed items-center gap-3 rounded-control border border-dashed border-line-strong bg-sunken px-4 font-semibold text-muted"
+        >
+          <svg aria-hidden="true" viewBox="0 0 12 14" className="h-3.5 w-3">
+            <rect x="1" y="6" width="10" height="7.5" fill="currentColor" />
+            <path
+              d="M3 6V4a3 3 0 0 1 6 0v2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+            />
+          </svg>
           {statusLabels[game.status]}
         </button>
-        <span className="destination">No launch date announced</span>
+        <p className="font-mono text-xs text-muted">Not playable yet</p>
       </div>
     );
+
   return (
-    <div className={`launch-group ${compact ? "compact" : ""}`}>
+    <div className="flex flex-col items-start gap-2">
       <a
-        className="play-button"
         href={game.playUrl}
         target="_blank"
         rel="noopener noreferrer"
+        data-sound="launch"
+        // Starts with the visible text, so voice control ("click Play now") still works.
         aria-label={`Play now: ${game.title} (opens in a new tab)`}
+        className={`play ${size === "md" ? "play-md" : ""}`}
       >
-        <span aria-hidden="true" className="play-triangle">
-          ▶
+        <span className="play-block" aria-hidden="true">
+          <svg viewBox="0 0 10 12" className="h-3 w-2.5">
+            <path d="M0 0 10 6 0 12Z" fill="currentColor" />
+          </svg>
         </span>
-        <span>Play now</span>
-        <span aria-hidden="true" className="launch-arrow">
-          ↗
+        <span className="play-text">
+          <span>Play now</span>
+          <span aria-hidden="true" className="play-arrow">
+            ↗
+          </span>
         </span>
       </a>
-      <span className="destination">
-        {new URL(game.playUrl).hostname} <span aria-hidden="true">↗</span>
-        <span className="launch-note">Opens in a new tab</span>
-      </span>
+      <p className="font-mono text-xs text-muted">
+        {hostname(game.playUrl)} <span aria-hidden="true">↗</span> · opens in a
+        new tab
+      </p>
     </div>
   );
 }

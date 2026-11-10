@@ -36,7 +36,6 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "sharp": "^0.35.5",
     "tailwindcss": "^4.3.5",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3"

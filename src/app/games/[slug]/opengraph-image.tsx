@@ -1,12 +1,18 @@
 import { notFound } from "next/navigation";
 import { games, getGame } from "@/content/games";
-import { createOgImage } from "@/lib/ogImage";
-export const alt = "A browser-first game by Casey Nguyen";
-export const size = { width: 1200, height: 630 };
+import { createOgImage, ogSize } from "@/lib/ogImage";
+import { statusLabels } from "@/lib/gameStatus";
+import { catalogNumber } from "@/lib/format";
+import { siteConfig } from "@/lib/siteConfig";
+
+export const alt = "A browser game by Casey Nguyen";
+export const size = ogSize;
 export const contentType = "image/png";
+
 export function generateStaticParams() {
   return games.map(({ slug }) => ({ slug }));
 }
+
 export default async function Image({
   params,
 }: {
@@ -14,5 +20,21 @@ export default async function Image({
 }) {
   const game = getGame((await params).slug);
   if (!game) notFound();
-  return createOgImage(game.title, game.tagline, game.accentColor);
+  const host = new URL(siteConfig.url).host;
+  return createOgImage({
+    eyebrow: [
+      `No. ${catalogNumber(games.indexOf(game) + 1)}`,
+      statusLabels[game.status],
+      game.workingTitle && "Working title",
+    ]
+      .filter(Boolean)
+      .join(" · "),
+    title: game.title,
+    subtitle: game.tagline,
+    footer:
+      game.status === "live"
+        ? `${host}/play/${game.slug}`
+        : `${host}/games/${game.slug}`,
+    accent: game.accentColor,
+  });
 }

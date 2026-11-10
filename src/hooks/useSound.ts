@@ -1,75 +1,84 @@
 "use client";
-import { useEffect, useRef, useSyncExternalStore } from "react";
-const key = "casey-games-sound";
-const eventName = "casey-sound-change";
-function subscribe(callback: () => void) {
-  window.addEventListener(eventName, callback);
-  window.addEventListener("storage", callback);
+import { useEffect, useSyncExternalStore } from "react";
+
+const STORAGE_KEY = "casey-games-sound";
+const CHANGE_EVENT = "casey-games-sound-change";
+
+/** Used when localStorage is unavailable (private mode, blocked storage). */
+let memoryEnabled = false;
+
+function subscribe(onChange: () => void) {
+  window.addEventListener(CHANGE_EVENT, onChange);
+  window.addEventListener("storage", onChange);
   return () => {
-    window.removeEventListener(eventName, callback);
-    window.removeEventListener("storage", callback);
+    window.removeEventListener(CHANGE_EVENT, onChange);
+    window.removeEventListener("storage", onChange);
   };
 }
-function snapshot() {
+
+function readEnabled(): boolean {
   try {
-    return localStorage.getItem(key) === "on";
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === null ? memoryEnabled : stored === "on";
   } catch {
-    return false;
+    return memoryEnabled;
   }
 }
+
+let audio: AudioContext | null = null;
+
+/** Short synthesized blips. No audio files; nothing plays until the user opts in. */
+function blip(kind: "click" | "launch") {
+  try {
+    audio ??= new AudioContext();
+    const ctx = audio;
+    void ctx
+      .resume()
+      .then(() => {
+        const notes = kind === "launch" ? [440, 660] : [520];
+        notes.forEach((frequency, index) => {
+          const start = ctx.currentTime + index * 0.06;
+          const tone = ctx.createOscillator();
+          const gain = ctx.createGain();
+          tone.type = "triangle";
+          tone.frequency.setValueAtTime(frequency, start);
+          gain.gain.setValueAtTime(0.04, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.07);
+          tone.connect(gain).connect(ctx.destination);
+          tone.start(start);
+          tone.stop(start + 0.08);
+        });
+      })
+      .catch(() => {});
+  } catch {
+    /* Audio may be unavailable or blocked; sound is never required. */
+  }
+}
+
 export function useSound() {
-  const enabled = useSyncExternalStore(subscribe, snapshot, () => false);
-  const context = useRef<AudioContext | null>(null);
+  const enabled = useSyncExternalStore(subscribe, readEnabled, () => false);
+
   useEffect(() => {
     if (!enabled) return;
-    const click = (event: MouseEvent) => {
-      if (
-        !(event.target instanceof Element) ||
-        !event.target.closest("a,button")
-      )
-        return;
-      try {
-        const audio = context.current ?? new AudioContext();
-        context.current = audio;
-        void audio
-          .resume()
-          .then(() => {
-            const tone = audio.createOscillator();
-            const gain = audio.createGain();
-            tone.frequency.setValueAtTime(520, audio.currentTime);
-            tone.frequency.exponentialRampToValueAtTime(
-              300,
-              audio.currentTime + 0.04,
-            );
-            gain.gain.setValueAtTime(0.025, audio.currentTime);
-            gain.gain.exponentialRampToValueAtTime(
-              0.001,
-              audio.currentTime + 0.045,
-            );
-            tone.connect(gain);
-            gain.connect(audio.destination);
-            tone.start();
-            tone.stop(audio.currentTime + 0.05);
-          })
-          .catch(() => {});
-      } catch {
-        /* Optional audio may be blocked. */
-      }
+    const onClick = (event: MouseEvent) => {
+      if (!(event.target instanceof Element)) return;
+      const control = event.target.closest("a, button");
+      if (!control || control.matches(":disabled")) return;
+      blip(control.matches("[data-sound='launch']") ? "launch" : "click");
     };
-    document.addEventListener("click", click);
-    return () => {
-      document.removeEventListener("click", click);
-      void context.current?.close().catch(() => {});
-      context.current = null;
-    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, [enabled]);
+
   const toggle = () => {
+    memoryEnabled = !enabled;
     try {
-      localStorage.setItem(key, enabled ? "off" : "on");
+      localStorage.setItem(STORAGE_KEY, memoryEnabled ? "on" : "off");
     } catch {
-      /* Storage may be unavailable. */
+      /* Storage unavailable: the in-memory value lasts for this page view. */
     }
-    window.dispatchEvent(new Event(eventName));
+    window.dispatchEvent(new Event(CHANGE_EVENT));
   };
+
   return { enabled, toggle };
 }

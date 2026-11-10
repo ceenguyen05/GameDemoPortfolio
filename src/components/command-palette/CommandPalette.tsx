@@ -1,7 +1,13 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { Dialog } from "@/components/ui/Dialog";
+import { Keycap } from "@/components/ui/Keycap";
+import { useIsMac } from "@/hooks/useIsMac";
+import { CommandLink } from "@/components/command-palette/CommandLink";
+import type { Command } from "@/types/command";
+
+// Motion loads only when the palette first opens.
 const CommandPanel = dynamic(
   () =>
     import("@/components/command-palette/CommandPanel").then(
@@ -9,83 +15,80 @@ const CommandPanel = dynamic(
     ),
   { ssr: false },
 );
-import { Dialog } from "@/components/ui/Dialog";
-import { Keycap } from "@/components/ui/Keycap";
-import { games } from "@/content/games";
-export function CommandPalette() {
+
+const groups: { kind: Command["kind"]; title: string }[] = [
+  { kind: "launch", title: "Play" },
+  { kind: "game", title: "Games" },
+  { kind: "page", title: "Pages" },
+];
+
+/**
+ * ⌘K / Ctrl+K palette. Results are ordinary links: launch results are real
+ * anchors to the live game (new tab), the rest are Next links. Arrow keys move
+ * the highlight, Enter follows it, Tab walks the links, Esc closes.
+ */
+export function CommandPalette({ commands }: { commands: Command[] }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const list = useRef<HTMLDivElement>(null);
-  const focusSearch = useCallback((element: HTMLInputElement | null) => {
-    element?.focus();
-  }, []);
-  const commands = useMemo(
-    () => [
-      {
-        label: "Game library",
-        detail: "Navigation",
-        href: "/#library",
-        launch: false,
-      },
-      {
-        label: "About Casey",
-        detail: "Navigation",
-        href: "/about",
-        launch: false,
-      },
-      ...games.flatMap((game) => [
-        {
-          label: game.title,
-          detail: "Game details",
-          href: `/games/${game.slug}`,
-          launch: false,
-        },
-        ...(game.status === "live"
-          ? [
-              {
-                label: `Play ${game.title}`,
-                detail: new URL(game.playUrl).hostname,
-                href: game.playUrl,
-                launch: true,
-              },
-            ]
-          : []),
-      ]),
-    ],
-    [],
+  const isMac = useIsMac();
+
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const matches = commands.filter((command) => {
+    const text = `${command.label} ${command.detail}`.toLowerCase();
+    return terms.every((term) => text.includes(term));
+  });
+  // Grouped render order is also the order the arrow keys walk.
+  const ordered = groups.flatMap(({ kind }) =>
+    matches.filter((command) => command.kind === kind),
   );
-  const filtered = commands.filter((command) =>
-    `${command.label} ${command.detail}`
-      .toLowerCase()
-      .includes(query.toLowerCase()),
-  );
+  const current = ordered[active];
+
   useEffect(() => {
-    const listener = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen((current) => !current);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "k")
+        return;
+      event.preventDefault();
+      if (!open) {
         setQuery("");
         setActive(0);
       }
+      setOpen(!open);
     };
-    window.addEventListener("keydown", listener);
-    return () => window.removeEventListener("keydown", listener);
-  }, []);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  const links = () =>
+    list.current?.querySelectorAll<HTMLAnchorElement>("a[data-command]") ?? [];
+
+  const move = (delta: number, focusLink: boolean) => {
+    if (!ordered.length) return;
+    const next = (active + delta + ordered.length) % ordered.length;
+    setActive(next);
+    const link = links()[next];
+    link?.scrollIntoView({ block: "nearest" });
+    if (focusLink) link?.focus();
+  };
+
   return (
     <>
       <button
-        className="command-trigger"
         type="button"
         onClick={() => {
-          setOpen(true);
           setQuery("");
           setActive(0);
+          setOpen(true);
         }}
-        aria-label="Quick search (⌘ K or Ctrl K): open command palette"
+        aria-keyshortcuts="Control+K Meta+K"
+        className="inline-flex min-h-11 items-center gap-2 px-2 text-sm font-semibold text-muted transition-colors duration-100 hover:text-ink sm:px-0"
       >
-        <span className="command-word">Quick search</span>
-        <Keycap>⌘ K</Keycap>
+        Search
+        {/* The shortcut hint is for keyboards; phones just get the word. */}
+        <span className="hidden sm:inline-flex">
+          <Keycap>{isMac ? "⌘ K" : "Ctrl K"}</Keycap>
+        </span>
       </button>
       <Dialog
         open={open}
@@ -94,30 +97,30 @@ export function CommandPalette() {
       >
         {open && (
           <CommandPanel>
-            <div className="dialog-top">
-              <h2 id="command-title" className="eyebrow">
-                Command / Quick search
+            <div className="flex items-center justify-between gap-4 border-b border-line px-4 py-1 sm:px-6">
+              <h2 id="command-title" className="label text-muted">
+                Jump to a game or page
               </h2>
               <button
                 type="button"
-                className="text-button"
                 onClick={() => setOpen(false)}
-                aria-label="Close command palette"
+                className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
               >
-                Esc ×
+                Close <Keycap>Esc</Keycap>
               </button>
             </div>
             <label htmlFor="command-search" className="sr-only">
               Search games and pages
             </label>
             <input
-              ref={focusSearch}
+              id="command-search"
               data-initial-focus
               autoFocus
-              id="command-search"
-              className="command-input"
+              autoComplete="off"
+              spellCheck={false}
               value={query}
-              placeholder="Find a game or a page."
+              placeholder="Type a game or page…"
+              aria-describedby="command-help"
               onChange={(event) => {
                 setQuery(event.target.value);
                 setActive(0);
@@ -125,84 +128,70 @@ export function CommandPalette() {
               onKeyDown={(event) => {
                 if (event.key === "ArrowDown" || event.key === "ArrowUp") {
                   event.preventDefault();
-                  const next =
-                    event.key === "ArrowDown" ? active + 1 : active - 1;
-                  const index =
-                    (next + filtered.length) % Math.max(filtered.length, 1);
-                  setActive(index);
-                  list.current
-                    ?.querySelectorAll("a")
-                    [index]?.scrollIntoView({ block: "nearest" });
+                  move(event.key === "ArrowDown" ? 1 : -1, false);
                 }
-                if (event.key === "Enter") {
+                if (event.key === "Enter" && current) {
                   event.preventDefault();
-                  list.current?.querySelectorAll("a")[active]?.click();
+                  links()[active]?.click();
                 }
               }}
-              aria-describedby="command-help"
+              className="block w-full border-b border-line bg-paper px-4 py-5 text-lg placeholder:text-muted focus-visible:outline-offset-[-2px] sm:px-6"
             />
             <div
               ref={list}
-              className="command-results"
+              className="max-h-[50dvh] overflow-auto p-2"
               onKeyDown={(event) => {
                 if (event.key !== "ArrowDown" && event.key !== "ArrowUp")
                   return;
                 event.preventDefault();
-                const next =
-                  (active +
-                    (event.key === "ArrowDown" ? 1 : -1) +
-                    filtered.length) %
-                  Math.max(filtered.length, 1);
-                setActive(next);
-                list.current?.querySelectorAll("a")[next]?.focus();
+                move(event.key === "ArrowDown" ? 1 : -1, true);
               }}
             >
-              {filtered.map((command, index) =>
-                command.launch ? (
-                  <a
-                    key={command.href}
-                    href={command.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`command-result ${index === active ? "selected" : ""}`}
-                    onFocus={() => setActive(index)}
-                    onClick={() => setOpen(false)}
-                  >
-                    <span>
-                      {command.label}
-                      <small>{command.detail}</small>
-                    </span>
-                    <span aria-hidden="true">↗</span>
-                  </a>
-                ) : (
-                  <Link
-                    key={command.href}
-                    href={command.href}
-                    className={`command-result ${index === active ? "selected" : ""}`}
-                    onFocus={() => setActive(index)}
-                    onClick={() => setOpen(false)}
-                  >
-                    <span>
-                      {command.label}
-                      <small>{command.detail}</small>
-                    </span>
-                    <span aria-hidden="true">↗</span>
-                  </Link>
-                ),
-              )}
-              {filtered.length === 0 && (
-                <p className="empty-state" role="status">
-                  No matches. Try “ACI” or “library”.
+              {groups.map(({ kind, title }) => {
+                const items = ordered.filter((c) => c.kind === kind);
+                if (!items.length) return null;
+                return (
+                  <section key={kind} aria-label={title}>
+                    <p
+                      aria-hidden="true"
+                      className="label px-3 pt-3 pb-1 text-muted"
+                    >
+                      {title}
+                    </p>
+                    <ul>
+                      {items.map((command) => (
+                        <li key={command.id}>
+                          <CommandLink
+                            command={command}
+                            selected={command === current}
+                            onFocus={() => setActive(ordered.indexOf(command))}
+                            onPick={() => setOpen(false)}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              })}
+              {ordered.length === 0 && (
+                <p className="px-3 py-6 text-sm text-muted">
+                  No matches. Try a game title, “play”, or “about”.
                 </p>
               )}
             </div>
-            <p id="command-help" className="command-help">
-              ↑ ↓ Select <span>Enter Open</span>
-              <span>Esc Close</span>
+            <p
+              id="command-help"
+              className="flex flex-wrap gap-x-5 gap-y-1 border-t border-line px-4 py-3 font-mono text-xs text-muted sm:px-6"
+            >
+              <span>↑ ↓ to move</span>
+              <span>Enter to open</span>
+              <span>Esc to close</span>
             </p>
-            <span className="sr-only" aria-live="polite">
-              {filtered.length} results. {filtered[active]?.label}
-            </span>
+            <p className="sr-only" aria-live="polite">
+              {ordered.length
+                ? `${ordered.length} results. Highlighted: ${current?.label}.`
+                : "No results."}
+            </p>
           </CommandPanel>
         )}
       </Dialog>

@@ -1,64 +1,104 @@
-# Deploying with Vercel
+# Deploying
 
-## First production deployment
+The hub deploys through Vercel's Git integration: every push to `main` goes to
+production at <https://gamedemoportfolio.vercel.app>, and every pull request gets a
+preview URL. No GitHub workflow deploys anything; CI only checks.
 
-1. Push this repository to `ceenguyen05/GameDemoPortfolio` on GitHub, with `main`
-   as the production branch.
-2. In Vercel, choose **Add New → Project → Import Git Repository**. Authorize access
-   to the repository and select it.
-3. Keep the repository root as the root directory. Vercel auto-detects **Next.js**.
-   Use `npm ci` for install and `npm run build` for build; leave the output directory
-   at the framework default. Select **Node.js 22.x**, matching `engines` and `.nvmrc`.
-4. Under **Settings → Git → Production Branch**, select **main**. Deploy.
-5. Open the assigned domain. Verify `/`, `/games/aci-series-1`, and
-   `/play/aci-series-1`. Replace the README's production URL placeholder.
-6. For a custom domain, add it in **Settings → Domains**, follow the DNS instructions,
-   and set `NEXT_PUBLIC_SITE_URL=https://your-domain.example` for the project. Redeploy
-   after changing this build-time value. No trailing slash is necessary.
+## If the site shows Vercel's `NOT_FOUND` page
 
-No required environment variables, secrets, services, or databases are needed.
-The canonical origin automatically uses Vercel's
-`VERCEL_PROJECT_PRODUCTION_URL`; the optional public variable overrides it.
-Outside Vercel, set the variable for production; otherwise metadata uses localhost.
-Do not copy the localhost value from `.env.example` into Vercel.
+**Symptom:** `/` returns "404: NOT_FOUND", but files like `/icons/favicon.svg` load.
 
-## Preview deployments
+**Cause:** the Vercel project was imported while the repo held only a README, so
+Vercel saved the Framework Preset as **Other**. With "Other", Vercel publishes
+`public/` as a plain static folder and never runs Next.js, so no page exists.
 
-Vercel creates a unique preview for each pull request and updates it as commits land.
-Open the preview from the Vercel GitHub check and test the same launch/Back behavior.
-Merging into `main` triggers production. CI and Lighthouse do **not** deploy anything.
-Preview metadata points to the production origin. Keep Vercel preview protection and
-its automatic no-index handling in place.
+**Fix (already in the repo):** `vercel.json` pins the framework, which overrides the
+dashboard setting on the next deploy:
 
-## Share links
+```json
+{ "$schema": "https://openapi.vercel.sh/vercel.json", "framework": "nextjs" }
+```
 
-`next.config.ts` generates `/play/<slug>` redirects directly from the validated catalog.
-Live games return HTTP **307 Temporary Redirect** to their HTTPS `playUrl`. Update the
-entry and deploy when the game's host changes; no permanent redirect is cached.
-The website's Play controls link directly to the live game in the same tab.
-Middle-click and browser “Open in new tab” remain native browser actions.
+After pushing, open **Project → Settings → Build and Deployment** and confirm:
 
-Unreleased slots create no redirect. Unknown `/play/` slugs return the themed 404.
-Share `https://YOUR-HUB-DOMAIN/play/aci-series-1` once the hub has a production domain.
+| Setting          | Value                                                         |
+| ---------------- | ------------------------------------------------------------- |
+| Framework Preset | Next.js                                                       |
+| Root Directory   | empty (repo root)                                             |
+| Build Command    | default (`npm run build`), override **off**                   |
+| Output Directory | default, override **off**. A leftover `public` here breaks it |
+| Install Command  | default (`npm install`), override **off**                     |
+| Node.js Version  | 22.x                                                          |
 
-## Protect main
+Then **Deployments → ⋯ → Redeploy** the latest commit. The build log should show
+`Validated 4 games and their assets.` followed by `▲ Next.js`.
 
-After CI has run once, open **GitHub repository → Settings → Rules → Rulesets** and
-create an active branch ruleset targeting `main`. Require pull requests and status
-checks before merging, and select the **checks** job from the **CI** workflow.
-Disable force pushes and branch deletion. Choose review requirements to suit your workflow.
-Lighthouse thresholds and live-game availability are advisory, so an external outage does
-not prevent a hub deployment.
+## Connecting from scratch
 
-## Checks and reports
+1. In Vercel: **Add New → Project → Import Git Repository**, then pick
+   `ceenguyen05/GameDemoPortfolio`.
+2. Framework: **Next.js**. It's auto-detected, and `vercel.json` pins it either way.
+   Leave root, build, output, and install at their defaults.
+3. **Settings → Git → Production Branch:** `main`.
+4. Deploy, then check `/`, `/games/aci-series-1`, and `/play/aci-series-1`.
 
-`ci.yml`: clean install, lint, typecheck, format, content tests, build, advisory link check.
-`lighthouse.yml`: build, local production server, three mobile Lighthouse runs per page.
-Four category thresholds warn below 95. The run uploads reports to temporary public storage
-and writes the resulting links into the GitHub Actions job summary. Report retention is
-temporary; download anything you need to preserve.
+No environment variables are required. For a custom domain, add it under
+**Settings → Domains**, then set `NEXT_PUBLIC_SITE_URL=https://your-domain` so
+canonical URLs, the sitemap, and social images use it. It's read at build time,
+so redeploy after changing it.
 
-For a local audit with Chrome installed: `npm run build && npm run lighthouse`.
-If Chrome is not detected, set the `CHROME_PATH` environment variable to its executable.
-Use `npm run test:browser` for interaction and responsive checks; it uses installed Chrome
-and starts a local production server if one is not already running.
+## Preview deploys
+
+Each pull request gets its own URL, posted on the PR by the Vercel bot, and it
+updates with every push. Test Play links and `/play/<slug>` there before merging.
+Previews keep Vercel's automatic `noindex`. Metadata still points at the
+production origin, so previews never compete in search.
+
+## Share links: `/play/<slug>`
+
+`next.config.ts` generates one redirect per **live** game from `src/content/games.ts`
+at build time:
+
+- `/play/aci-series-1` → **307 Temporary Redirect** → `https://aci-series1.vercel.app/`
+- Temporary on purpose: browsers don't cache it, so changing a game's `playUrl` and
+  redeploying moves every shared link.
+- Games that aren't live get no redirect. Any unknown `/play/...` path falls through
+  to the site's 404 page, which links back to the library.
+- `robots.txt` disallows `/play/` so crawlers index game pages, not redirects.
+
+On the site itself, every **Play now** button is a real link to the game's own URL
+and opens it in a new tab. Middle-click and "Open in new tab" work as usual.
+
+## Protect `main`
+
+After CI has run once on GitHub:
+
+1. **Repo → Settings → Rules → Rulesets → New branch ruleset.**
+2. Target branch: `main`. Enforcement: **Active**.
+3. Turn on **Require a pull request before merging** and **Require status checks to
+   pass**. Add the check **`checks`** (the CI job).
+4. Turn on **Block force pushes**. Leave Lighthouse (`audit`) optional: it only warns.
+
+If you protect `main` before pushing the rewritten history, the force-push will be
+blocked. Push first, then add the ruleset.
+
+## What the workflows do
+
+- **`ci.yml`** (push to `main`, PRs): `npm ci`, lint, typecheck, format check, unit
+  tests, build, then a live-link check that warns without failing.
+- **`lighthouse.yml`** (PRs): builds, starts the site, audits `/` and
+  `/games/aci-series-1` three times on mobile, and warns below 95. It uploads reports
+  to temporary public storage and links them in the job summary.
+
+CI uses `npm ci` because a fresh runner has nothing to lock files, and `npm ci` fails
+loudly if `package-lock.json` drifts from `package.json`. Locally, use `npm install`.
+
+## Local troubleshooting (Windows)
+
+- **`npm ci` fails with `EPERM`/`EBUSY`, or leaves `node_modules` half-deleted.**
+  `npm ci` deletes `node_modules` first, and Windows won't delete files that a
+  running `npm run dev`, `npm start`, or editor process holds open. Stop the dev
+  server, then run `npm install`.
+- **`npm run dev` can't find `next`.** `node_modules` is incomplete (often from the
+  above). Run `npm install` again.
+- **Port 3000 is busy.** `npm run dev -- -p 3001`.
