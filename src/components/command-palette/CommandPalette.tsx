@@ -50,15 +50,15 @@ export function CommandPalette({ commands }: { commands: Command[] }) {
       if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "k")
         return;
       event.preventDefault();
-      if (!open) {
-        setQuery("");
-        setActive(0);
-      }
-      setOpen(!open);
+      // The updater form reads the latest state. Reading `open` from this
+      // closure went stale for a moment after Esc, so a quick Ctrl+K was lost.
+      setQuery("");
+      setActive(0);
+      setOpen((wasOpen) => !wasOpen);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  }, []);
 
   const links = () =>
     list.current?.querySelectorAll<HTMLAnchorElement>("a[data-command]") ?? [];

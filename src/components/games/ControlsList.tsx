@@ -10,7 +10,7 @@ export function ControlsList({ game }: { game: Game }) {
       aria-labelledby="controls-title"
       className="defer-render scroll-mt-6"
     >
-      <div className="flex items-baseline justify-between gap-4 border-t border-ink pt-3">
+      <div className="flex items-baseline justify-between gap-4 border-t border-line-strong pt-3">
         <h2 id="controls-title" className="label">
           Controls
         </h2>

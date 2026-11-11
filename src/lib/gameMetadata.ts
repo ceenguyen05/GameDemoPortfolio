@@ -9,10 +9,17 @@ export function gameMetadata(game: Game): Metadata {
     url: `${path}/opengraph-image`,
     width: 1200,
     height: 630,
-    alt: `${game.title}, a browser game by Casey Nguyen`,
+    alt: `${game.title}, a browser game by ${game.developer.name}`,
   };
   return {
     title: game.title,
+    authors: [
+      {
+        name: game.developer.name,
+        url: game.developer.websiteUrl ?? game.developer.githubUrl,
+      },
+    ],
+    creator: game.developer.name,
     description,
     alternates: { canonical: path },
     openGraph: {

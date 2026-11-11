@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { SiteLink as Link } from "@/components/ui/SiteLink";
+import { Arrow } from "@/components/ui/Arrow";
 import type { Command } from "@/types/command";
 
 /** One palette result: a real anchor for launches (new tab), a Next link otherwise. */
@@ -28,7 +29,7 @@ export function CommandLink({
         </span>
       </span>
       <span aria-hidden="true" className="text-muted">
-        {command.kind === "launch" ? "↗" : "→"}
+        {command.kind === "launch" ? <Arrow /> : "→"}
       </span>
     </>
   );

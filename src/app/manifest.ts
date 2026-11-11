@@ -1,13 +1,15 @@
 import type { MetadataRoute } from "next";
+import { siteConfig } from "@/lib/siteConfig";
+import { theme } from "@/lib/theme";
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Casey Nguyen / Games",
-    short_name: "Casey Games",
-    description: "Browser-first games by Casey Nguyen",
+    name: siteConfig.name,
+    short_name: siteConfig.name,
+    description: siteConfig.description,
     start_url: "/",
     display: "browser",
-    background_color: "#f4f3ee",
-    theme_color: "#f4f3ee",
+    background_color: theme.paper,
+    theme_color: theme.paper,
     icons: [
       {
         src: "/icons/icon-192.png",

@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { GameImage } from "@/types/game";
+import { Arrow } from "@/components/ui/Arrow";
 import { Dialog } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { Keycap } from "@/components/ui/Keycap";
@@ -24,7 +25,7 @@ export function Gallery({ images }: { images: GameImage[] }) {
 
   return (
     <section aria-labelledby="gallery-title" className="defer-render">
-      <div className="flex items-baseline justify-between gap-4 border-t border-ink pt-3">
+      <div className="flex items-baseline justify-between gap-4 border-t border-line-strong pt-3">
         <h2 id="gallery-title" className="label">
           Gallery
         </h2>
@@ -40,7 +41,7 @@ export function Gallery({ images }: { images: GameImage[] }) {
               onClick={() => setSelected(position)}
               className="group block w-full text-left"
             >
-              <span className="relative block aspect-video overflow-hidden border border-line bg-sunken transition-colors duration-100 group-hover:border-game">
+              <span className="relative block aspect-video overflow-hidden rounded-[10px] border border-line bg-sunken transition-colors duration-100 group-hover:border-game">
                 <Image
                   src={image.src}
                   alt=""
@@ -50,7 +51,7 @@ export function Gallery({ images }: { images: GameImage[] }) {
                       ? "(min-width: 1440px) 900px, (min-width: 1024px) 62vw, 100vw"
                       : "(min-width: 1440px) 450px, (min-width: 1024px) 31vw, (min-width: 640px) 50vw, 100vw"
                   }
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                 />
               </span>
               <span className="mt-2 flex justify-between gap-4 font-mono text-xs text-muted">
@@ -58,7 +59,9 @@ export function Gallery({ images }: { images: GameImage[] }) {
                   <span className="sr-only">Enlarge: {image.alt}. </span>
                   {catalogNumber(position + 1)} — {image.caption}
                 </span>
-                <span aria-hidden="true">Enlarge ↗</span>
+                <span aria-hidden="true">
+                  Enlarge <Arrow />
+                </span>
               </span>
             </button>
           </li>

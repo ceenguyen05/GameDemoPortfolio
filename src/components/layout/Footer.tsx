@@ -1,45 +1,38 @@
-import Link from "next/link";
+import { SiteLink as Link } from "@/components/ui/SiteLink";
 import { SoundToggle } from "@/components/layout/SoundToggle";
+import { Arrow } from "@/components/ui/Arrow";
+import { Spark } from "@/components/ui/Spark";
 import { siteConfig } from "@/lib/siteConfig";
-
-const footerLink =
-  "inline-flex min-h-11 items-center text-sm font-semibold hover:underline hover:underline-offset-4";
 
 export function Footer() {
   return (
-    <footer className="shell mt-section">
-      <div className="grid gap-6 border-t border-line py-8 sm:grid-cols-2 sm:items-start">
+    <footer className="shell site-footer">
+      <div className="footer-main">
         <div>
-          <Link href="/" className="font-extrabold tracking-[-0.03em]">
-            Casey Nguyen
+          <Link prefetch={false} href="/" className="wordmark">
+            {siteConfig.name}
+            <span className="brand-period">.</span>
           </Link>
-          <p className="mt-1 text-sm text-muted">
-            Games built for the browser. Independent work, open to play.
-          </p>
+          <p>Small games. Good company.</p>
         </div>
-        <ul className="flex flex-wrap gap-x-6 sm:justify-end">
-          <li>
-            <a href={siteConfig.github} className={footerLink}>
-              GitHub <span aria-hidden="true">↗</span>
-            </a>
-          </li>
-          <li>
-            <a href={`mailto:${siteConfig.email}`} className={footerLink}>
-              Email
-            </a>
-          </li>
-          <li>
-            <Link href="/about" className={footerLink}>
-              About
-            </Link>
-          </li>
-        </ul>
+        <div className="footer-nav">
+          <Link prefetch={false} href="/#library">
+            Find a game <Arrow />
+          </Link>
+          <Link prefetch={false} href="/about">
+            About the collection <Arrow />
+          </Link>
+        </div>
+        <span className="footer-flower" aria-hidden="true">
+          <Spark />
+        </span>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-line py-4">
+      <div className="footer-baseline">
+        <span>Made to be played. Better when shared.</span>
         <SoundToggle />
-        <p className="label text-muted">
-          © {new Date().getFullYear()} Casey Nguyen
-        </p>
+        <span>
+          © {new Date().getFullYear()} {siteConfig.name}
+        </span>
       </div>
     </footer>
   );

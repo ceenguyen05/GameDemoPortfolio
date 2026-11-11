@@ -1,0 +1,214 @@
+/* The game library: tiles and the status filter. */
+
+[data-filter="live"] [data-status]:not([data-status="live"]),
+[data-filter="in-development"]
+  [data-status]:not([data-status="in-development"]),
+[data-filter="coming-soon"] [data-status]:not([data-status="coming-soon"]) {
+  display: none;
+}
+@layer components {
+  .game-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .game-tile {
+    position: relative;
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    transition:
+      transform 0.25s,
+      border-color 0.25s,
+      box-shadow 0.25s;
+  }
+  .game-tile:hover,
+  .game-tile:focus-within {
+    transform: translateY(-7px);
+    border-color: var(--game);
+    box-shadow: 0 16px 30px #0003;
+  }
+  .game-tile-media {
+    position: relative;
+    aspect-ratio: 1.25;
+    overflow: hidden;
+    background: var(--sunken);
+  }
+  .tile-cover,
+  .tile-alternate {
+    object-fit: cover;
+    transition:
+      transform 0.45s,
+      opacity 0.3s;
+  }
+  .tile-alternate {
+    opacity: 0;
+  }
+  .game-tile:hover .tile-cover,
+  .game-tile:focus-within .tile-cover {
+    transform: scale(1.055);
+  }
+  .game-tile:hover .tile-alternate,
+  .game-tile:focus-within .tile-alternate {
+    opacity: 1;
+  }
+  .tile-number {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font: 11px var(--font-mono);
+    color: var(--ink);
+    padding: 6px 8px;
+    background: color-mix(in srgb, var(--paper) 85%, transparent);
+    border: 1px solid #ffffff25;
+    border-radius: 5px;
+  }
+  .tile-open {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    background: var(--game);
+    color: var(--on-accent);
+    font-size: 21px;
+    border-radius: 50%;
+    transform: rotate(-35deg);
+    opacity: 0;
+    transition:
+      transform 0.25s,
+      opacity 0.25s;
+  }
+  .game-tile:hover .tile-open,
+  .game-tile:focus-within .tile-open {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  .tile-body {
+    padding: 20px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    border-top: 2px solid var(--game);
+  }
+  .tile-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .tile-body h3 {
+    font-size: 22px;
+    line-height: 1.3;
+    letter-spacing: -0.05em;
+    margin-top: 18px;
+  }
+  .tile-body > p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 10px;
+    margin-bottom: 24px;
+  }
+  .tile-bottom {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+  .tile-bottom .play,
+  .tile-bottom button {
+    position: relative;
+    z-index: 2;
+  }
+  .tile-bottom .play {
+    min-height: 40px;
+  }
+  .tile-bottom .play-block {
+    width: 34px;
+  }
+  .tile-bottom .play-text {
+    font-size: 12px;
+    gap: 10px;
+    padding: 0 10px;
+  }
+  .tile-details {
+    font-size: 12px;
+    color: var(--muted);
+  }
+}
+@media (max-width: 1199px) {
+  .game-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 639px) {
+  .game-tiles {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .game-tile-media {
+    aspect-ratio: 1.6;
+  }
+  .tile-body {
+    padding: 22px;
+  }
+  .tile-body h3 {
+    font-size: 27px;
+  }
+  .tile-body > p {
+    font-size: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-tile:hover,
+  .game-tile:focus-within {
+    transform: none;
+  }
+  .tile-alternate {
+    display: none;
+  }
+  .tile-cover {
+    transform: none !important;
+  }
+}
+
+/* A quiet destination marker and visible feedback for every filter. */
+.library-section:focus {
+  outline: none;
+}
+.library-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.library-marker {
+  width: 26px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--signal);
+  transform-origin: left center;
+}
+.library-count {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+}
+.library-count::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}

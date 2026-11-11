@@ -1,91 +1,79 @@
-import Link from "next/link";
+import { SiteLink as Link } from "@/components/ui/SiteLink";
 import { siteConfig } from "@/lib/siteConfig";
-import { displayUrl } from "@/lib/format";
-
-const contacts = [
-  {
-    label: "GitHub",
-    value: displayUrl(siteConfig.github),
-    href: siteConfig.github,
-  },
-  {
-    label: "Email",
-    value: siteConfig.email,
-    href: `mailto:${siteConfig.email}`,
-  },
-];
+import { games } from "@/content/games";
+import { Arrow } from "@/components/ui/Arrow";
+import { statusLabels } from "@/lib/gameStatus";
 
 export function AboutView() {
   return (
     <>
-      <nav aria-label="Breadcrumb" className="py-4">
+      <nav aria-label="Breadcrumb" className="py-6">
         <Link
+          prefetch={false}
           href="/"
-          className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-muted hover:text-ink"
+          className="inline-flex min-h-11 items-center text-sm text-muted hover:text-ink"
         >
-          <span aria-hidden="true">←</span> Home
+          <span aria-hidden="true">←</span>&nbsp;Back to the collection
         </Link>
       </nav>
-
-      <section className="grid gap-10 pt-8 pb-section lg:grid-cols-12 lg:gap-6 lg:pt-12">
-        <div className="lg:col-span-8">
-          <p className="label text-muted">Casey Nguyen · Software engineer</p>
-          <h1 className="mt-5 text-display">
-            I write code.
+      <section className="collection-about">
+        <p className="label text-signal">This is {siteConfig.name}</p>
+        <h1 className="text-display">
+          A place for games.
+          <br />
+          <span className="text-signal">And the people who play them.</span>
+        </h1>
+        <p>
+          Some projects start with an idea. Others start with “wouldn’t it be
+          fun if…”. This is a home for those games: the ones you can open in a
+          tab and send to a friend.
+        </p>
+        <p>
+          Explore the screenshots, read up on the controls, and hit Play now.
+          The game opens on its own website in a new tab, so the collection
+          stays right here.
+        </p>
+      </section>
+      <section className="about-notes" data-reveal="">
+        <div>
+          <span className="about-number">01</span>
+          <h2>
+            Different games.
             <br />
-            Sometimes,
-            <br />
-            <span className="text-signal">you can play it.</span>
-          </h1>
-        </div>
-        <div className="space-y-5 text-lead text-muted lg:col-span-6 lg:col-start-4">
+            Different makers.
+          </h2>
           <p>
-            I’m Casey. I build browser-first games, starting with ACI: Series 1,
-            a tactical shooter written in TypeScript and Three.js.
+            Every game has its own page with credits, development notes, and the
+            creator’s public links. Feedback or a question about a game? That’s
+            the place to start.
           </p>
+        </div>
+        <div>
+          <span className="about-number">02</span>
+          <h2>
+            A work
+            <br />
+            in progress.
+          </h2>
           <p>
-            I like games you can send as a link. This collection is the home for
-            that work: a quick look, the controls, and a straight shot into the
-            game.
+            Play what’s ready. Take a look at what’s next. Upcoming games stay
+            clearly marked until there’s a real build to try.
           </p>
         </div>
       </section>
-
-      <section
-        aria-labelledby="contact-title"
-        className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-6"
-      >
-        <div className="lg:col-span-4">
-          <p className="label text-muted">Get in touch</p>
-          <h2 id="contact-title" className="mt-3 text-h2">
-            Say hello.
-          </h2>
-          <p className="mt-3 text-muted">
-            Source code, questions, or something worth building.
-          </p>
-        </div>
-        <ul className="border-t border-ink lg:col-span-6 lg:col-start-7">
-          {contacts.map((contact) => (
-            <li key={contact.label} className="border-b border-line">
-              <a
-                href={contact.href}
-                className="group flex min-h-20 items-center justify-between gap-4 py-4"
-              >
-                <span className="min-w-0">
-                  <span className="block text-h3 group-hover:underline group-hover:underline-offset-4">
-                    {contact.label}
-                  </span>
-                  <span className="mt-1 block font-mono text-sm break-all text-muted">
-                    {contact.value}
-                  </span>
-                </span>
-                <span aria-hidden="true" className="text-h3">
-                  ↗
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
+      <section className="about-directory" data-reveal="">
+        <h2 className="text-h2">Find your way in.</h2>
+        {games.map((game) => (
+          <Link prefetch={false} key={game.slug} href={`/games/${game.slug}`}>
+            <span>{game.title}</span>
+            <span>
+              {game.status === "live"
+                ? "Ready to play"
+                : statusLabels[game.status]}{" "}
+              <Arrow />
+            </span>
+          </Link>
+        ))}
       </section>
     </>
   );

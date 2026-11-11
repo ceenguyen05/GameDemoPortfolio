@@ -42,7 +42,7 @@ export default {
       },
       maxWidth: { content: "var(--content)" },
       spacing: { gutter: "var(--gutter)", section: "var(--space-section)" },
-      borderRadius: { control: "3px" },
+      borderRadius: { control: "8px" },
     },
   },
 } satisfies Config;

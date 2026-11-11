@@ -6,7 +6,7 @@ export function Changelog({ entries }: { entries: ChangelogEntry[] }) {
   if (!entries.length) return null;
   return (
     <section aria-labelledby="changelog-title" className="defer-render">
-      <div className="flex items-baseline justify-between gap-4 border-t border-ink pt-3">
+      <div className="flex items-baseline justify-between gap-4 border-t border-line-strong pt-3">
         <h2 id="changelog-title" className="label">
           Release notes
         </h2>

@@ -1,0 +1,329 @@
+/* Small interactive layers on the existing Playroom layout. */
+[data-filter="saved"] [data-slug]:not([data-saved="true"]) {
+  display: none;
+}
+
+@layer components {
+  .bookmark-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .save-game {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 10px 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .save-game:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .save-game[aria-pressed="true"] {
+    color: var(--signal);
+    border-color: var(--signal);
+    background: color-mix(in srgb, var(--signal) 8%, var(--surface));
+  }
+  .save-game[aria-pressed="true"] .bookmark-icon {
+    animation: bookmark-pop 0.3s var(--ease-out);
+  }
+  .save-game-compact {
+    width: 44px;
+    padding: 0;
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+  }
+  .tile-save {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+  }
+  .tile-quick-row {
+    position: relative;
+    z-index: 2;
+    padding: 0 20px 17px;
+  }
+  .quick-look-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 44px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .quick-look-trigger .icon {
+    transition: transform 0.2s var(--ease-out);
+  }
+  .quick-look-trigger:hover {
+    color: var(--signal);
+  }
+  .quick-look-trigger:hover .icon {
+    transform: translate(2px, -2px);
+  }
+  .tile-light {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at var(--light-x, 50%) var(--light-y, 40%),
+      #ffffff20,
+      transparent 65%
+    );
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .game-tile[data-lit] .tile-light {
+    opacity: 1;
+  }
+  .saved-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 50px 22px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .saved-empty > .bookmark-icon {
+    width: 38px;
+    height: 38px;
+    color: var(--signal);
+  }
+  .saved-empty h3 {
+    font-size: 26px;
+    letter-spacing: -0.04em;
+  }
+  .saved-empty p,
+  .saved-note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .saved-note {
+    margin-top: 18px;
+  }
+  .saved-empty .browse-button {
+    margin-top: 8px;
+  }
+  .quick-look-dialog {
+    width: min(680px, calc(100% - 32px));
+  }
+  .quick-look-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .quick-close {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quick-close > span {
+    font-size: 25px;
+  }
+  .quick-look-cover {
+    position: relative;
+  }
+  .quick-look-cover img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+  }
+  .quick-look-cover figcaption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30px 24px 12px;
+    background: linear-gradient(transparent, #101210ef);
+    color: #f3f4ed;
+    font-size: 12px;
+  }
+  .quick-look-content {
+    padding: 24px;
+  }
+  .quick-look-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .quick-look-content h2 {
+    font-size: clamp(28px, 6vw, 45px);
+    line-height: 1.15;
+    letter-spacing: -0.055em;
+    margin-top: 22px;
+  }
+  .quick-tagline {
+    font-size: 17px;
+    font-weight: 700;
+    margin-top: 14px;
+  }
+  .quick-description {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+    margin-top: 12px;
+  }
+  .quick-facts {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .quick-facts li {
+    font-size: 12px;
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: var(--muted);
+  }
+  .quick-look-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    padding-top: 26px;
+    margin-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .preview-image {
+    touch-action: pan-y pinch-zoom;
+  }
+  .preview-navigation {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    pointer-events: none;
+  }
+  .preview-navigation button {
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #ffffff45;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--paper) 85%, transparent);
+    color: var(--ink);
+    cursor: pointer;
+    opacity: 0;
+    transition:
+      opacity 0.2s,
+      transform 0.2s,
+      background 0.2s;
+  }
+  .hero-preview:hover .preview-navigation button,
+  .hero-preview:focus-within .preview-navigation button {
+    opacity: 1;
+  }
+  .preview-navigation button:hover {
+    background: var(--signal);
+    color: var(--on-accent);
+    transform: scale(1.06);
+  }
+  .preview-navigation svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .preview-progress {
+    display: flex;
+    gap: 3px;
+    height: 3px;
+    background: var(--paper);
+  }
+  .preview-progress span {
+    flex: 1;
+    background: var(--line);
+    transition: background 0.25s;
+  }
+  .preview-progress span[data-active="true"] {
+    background: var(--game);
+  }
+  .preview-loading {
+    opacity: 0;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .game-tile[data-lit]:hover {
+    transform: perspective(1000px) translateY(-7px) rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg));
+  }
+}
+@media (hover: none) {
+  .preview-navigation button {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile-light {
+    display: none;
+  }
+  .preview-navigation button:hover {
+    transform: none;
+  }
+  .save-game[aria-pressed="true"] .bookmark-icon {
+    animation: none;
+  }
+}
+@media (max-width: 639px) {
+  .tile-quick-row {
+    padding: 0 22px 17px;
+  }
+  .quick-look-top,
+  .quick-look-content {
+    padding-inline: 18px;
+  }
+  .quick-look-dialog {
+    max-height: 92dvh;
+  }
+  .quick-look-cover figcaption {
+    padding-inline: 18px;
+  }
+  .preview-navigation {
+    padding: 10px;
+  }
+}
+@keyframes bookmark-pop {
+  50% {
+    transform: translateY(-2px) scale(1.16);
+  }
+}

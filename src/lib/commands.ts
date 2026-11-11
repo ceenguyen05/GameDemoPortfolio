@@ -42,7 +42,7 @@ export function buildCommands(games: Game[]): Command[] {
     },
     {
       id: "about",
-      label: "About and contact",
+      label: "About the collection",
       detail: "Page",
       href: "/about",
       kind: "page",

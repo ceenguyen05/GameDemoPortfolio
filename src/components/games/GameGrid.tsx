@@ -1,11 +1,12 @@
+import { CardLighting } from "./CardLighting";
 import { games } from "@/content/games";
 import { GameCard } from "@/components/games/GameCard";
 import { LibraryFilter } from "@/components/games/LibraryFilter";
 import { statusLabels, statusOrder } from "@/lib/gameStatus";
 
 /**
- * The full library as a numbered catalog. Rows render on the server; the
- * client-side filter only flips a data attribute, so no row hydrates.
+ * The full library as numbered tiles. Tiles render on the server; the
+ * client-side filter only flips a data attribute, so no tile hydrates.
  */
 export function GameGrid() {
   const filters = statusOrder
@@ -19,22 +20,35 @@ export function GameGrid() {
   return (
     <section
       id="library"
+      tabIndex={-1}
       aria-labelledby="library-title"
-      className="scroll-mt-6 pt-section"
+      className="library-section scroll-mt-6 pt-section"
     >
       <div className="grid gap-4 lg:grid-cols-12 lg:items-end">
         <div className="lg:col-span-8">
-          <p className="label text-muted">The library</p>
+          <p className="library-eyebrow label text-muted">
+            <span
+              className="library-marker"
+              data-section-cue=""
+              aria-hidden="true"
+            />
+            The library
+          </p>
           <h2 id="library-title" className="mt-3 text-h2">
-            Every game, one shelf.
+            Find your next rabbit hole.
           </h2>
         </div>
         <p className="text-muted lg:col-span-4 lg:text-right">
           Live games launch straight from here. The rest are on the way.
         </p>
       </div>
-      <LibraryFilter total={games.length} filters={filters}>
-        <ol className="border-b border-line">
+      <CardLighting />
+      <LibraryFilter
+        total={games.length}
+        filters={filters}
+        slugs={games.map((game) => game.slug)}
+      >
+        <ol className="game-tiles" data-reveal="">
           {games.map((game, index) => (
             <GameCard key={game.slug} game={game} position={index + 1} />
           ))}

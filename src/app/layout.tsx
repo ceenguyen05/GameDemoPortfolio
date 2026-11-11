@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Manrope } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ScrollReveal } from "@/components/layout/ScrollReveal";
 import { siteConfig } from "@/lib/siteConfig";
+import { theme } from "@/lib/theme";
 import "@/styles/globals.css";
 
 const sans = Manrope({
@@ -25,8 +27,6 @@ export const metadata: Metadata = {
   title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
   description: siteConfig.description,
   applicationName: siteConfig.name,
-  authors: [{ name: "Casey Nguyen", url: siteConfig.github }],
-  creator: "Casey Nguyen",
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
@@ -49,8 +49,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f4f3ee",
-  colorScheme: "light",
+  themeColor: theme.paper,
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -70,6 +70,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <ScrollReveal />
       </body>
     </html>
   );

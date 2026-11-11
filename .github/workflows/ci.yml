@@ -31,6 +31,11 @@ jobs:
       - run: npm run format:check
       - run: npm test
       - run: npm run build
+      - name: Install browser for interaction checks
+        run: npx playwright install --with-deps chromium
+      - name: Check browser behavior
+        run: |
+          npm run test:browser -- --grep-invert "live: Play"
       - name: Check live game links (advisory)
         run: npm run check:links
         continue-on-error: true

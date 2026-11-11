@@ -1,9 +1,10 @@
 import type { Game } from "../types/game";
 import { contrastRatio } from "./color";
+import { theme } from "./theme";
 
-/** Ink text color from the design tokens; accents sit behind ink glyphs. */
-const INK = "#1b2220";
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+/** Covers and screenshots must be raster so the image optimizer can resize them. */
+const RASTER = /\.(webp|avif|png|jpe?g)$/i;
 
 function isHttpsUrl(value: unknown): boolean {
   if (typeof value !== "string") return false;
@@ -43,6 +44,18 @@ export function validateGames(entries: Game[]): Game[] {
       fail("duplicate slug; each game needs a unique slug");
     slugs.add(game.slug);
 
+    if (!game.developer?.name?.trim()) fail("developer.name is required");
+    for (const field of ["githubUrl", "websiteUrl"] as const) {
+      const value = game.developer[field];
+      if (value !== undefined && !isHttpsUrl(value))
+        fail(`developer.${field} must be an https:// URL`);
+    }
+    if (
+      game.developer.email !== undefined &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(game.developer.email)
+    )
+      fail("developer.email must be a valid address");
+
     if (!game.title.trim() || !game.tagline.trim())
       fail("title and tagline are required");
     if (!game.description.short.trim() || !game.description.long.trim())
@@ -64,10 +77,11 @@ export function validateGames(entries: Game[]): Game[] {
 
     if (!/^#[0-9a-f]{6}$/i.test(game.accentColor))
       fail("accentColor must be a six-digit hex color like #ff743d");
-    const contrast = contrastRatio(game.accentColor, INK);
+    // Dark glyphs (the Play triangle, card arrows) sit on the accent.
+    const contrast = contrastRatio(game.accentColor, theme.onAccent);
     if (contrast < 3)
       fail(
-        `accentColor ${game.accentColor} has ${contrast.toFixed(2)}:1 contrast against ink ${INK}; pick a lighter color (needs 3:1)`,
+        `accentColor ${game.accentColor} has ${contrast.toFixed(2)}:1 contrast against the dark glyph color ${theme.onAccent}; pick a lighter color (needs 3:1)`,
       );
 
     for (const asset of [game.coverImage, ...game.screenshots]) {
@@ -76,6 +90,10 @@ export function validateGames(entries: Game[]): Game[] {
         asset.src.includes("..")
       )
         fail(`${asset.src}: images must live in public/games/${game.slug}/`);
+      if (!RASTER.test(asset.src))
+        fail(
+          `${asset.src}: use WebP, AVIF, PNG or JPEG. SVG images render on the main thread and slow the page; render concept art with "npm run render:covers"`,
+        );
       if (!asset.alt.trim() || asset.width <= 0 || asset.height <= 0)
         fail(`${asset.src}: needs alt text and positive width/height`);
     }

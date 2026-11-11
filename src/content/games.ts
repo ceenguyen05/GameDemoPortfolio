@@ -1,3 +1,4 @@
+import { developers } from "./developers";
 import type { Game, LiveGame } from "../types/game";
 import { validateGames } from "../lib/validateGames";
 
@@ -12,6 +13,7 @@ export const games: Game[] = validateGames([
   // README, src/config/controls.ts (DEFAULT_BINDINGS), src/config/gadgets.ts.
   {
     slug: "aci-series-1",
+    developer: developers.casey,
     title: "ACI: Series 1",
     tagline: "Plant the bomb. Hold the site. Survive the horde.",
     description: {
@@ -63,37 +65,56 @@ export const games: Game[] = validateGames([
     repoUrl: "https://github.com/ceenguyen05/ACI-SND",
     releaseDate: "2026-11-09", // Confirmed by Casey: first hub release is today.
     accentColor: "#ff743d",
+    // Live v1.7.6 captures, November 10, 2026. See docs/ACI_CAPTURES.md.
     coverImage: {
       src: "/games/aci-series-1/cover.webp",
-      alt: "First-person view of ACI HQ's brick loading yard, with a teammate running ahead at round start",
-      caption: "ACI HQ / Loading yard",
-      width: 1280,
-      height: 720,
+      alt: "ACI: Series 1 title screen over the ACI HQ factory, with Click or press any key",
+      caption: "Startup / ACI HQ",
+      width: 1920,
+      height: 1080,
     },
-    // TODO(casey): these three captures come from test sessions and show debug
-    // health values (+999999967 and similar) in the HUD. Replace them with clean
-    // captures from a normal match; same filenames, 1280×720 WebP.
     screenshots: [
       {
         src: "/games/aci-series-1/screenshot-01.webp",
-        alt: "Looking down an ACI HQ office corridor after a triple kill, with the killstreak list on screen",
-        caption: "ACI HQ / Office corridor",
-        width: 1280,
-        height: 720,
+        alt: "First-person view along ACI HQ's brick loading yard with a normal 100-health HUD",
+        caption: "ACI HQ / Loading yard",
+        width: 1920,
+        height: 1080,
       },
       {
         src: "/games/aci-series-1/screenshot-02.webp",
-        alt: "A squad lined up in ACI Building 2's atrium at round start, with the buy-menu tip on screen",
-        caption: "ACI Building 2 / Atrium",
-        width: 1280,
-        height: 720,
+        alt: "The assembly line and industrial equipment at ACI HQ's A site",
+        caption: "ACI HQ / Assembly line",
+        width: 1920,
+        height: 1080,
       },
       {
         src: "/games/aci-series-1/screenshot-03.webp",
-        alt: "Zombies mode in ACI HQ's main lobby, facing locked security doors with five zombies left in the wave",
-        caption: "Zombies / Main lobby",
-        width: 1280,
-        height: 720,
+        alt: "ACI Building 2's brick exterior and main entrance from the parking lot",
+        caption: "ACI Building 2 / Main entrance",
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: "/games/aci-series-1/screenshot-04.webp",
+        alt: "Engineering workbenches and testing equipment inside ACI Building 2's prototype lab",
+        caption: "ACI Building 2 / Prototype lab",
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: "/games/aci-series-1/cover.webp",
+        alt: "ACI: Series 1 title screen over the ACI HQ factory, with Click or press any key",
+        caption: "Startup / ACI HQ",
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: "/games/aci-series-1/screenshot-05.webp",
+        alt: "Facing an approaching zombie in the ACI HQ lobby during the first survival wave",
+        caption: "Zombies / First wave",
+        width: 1920,
+        height: 1080,
       },
     ],
     // Confirmed by Casey: one entry for the current version, dated the hub
@@ -122,32 +143,31 @@ export const games: Game[] = validateGames([
     ],
   },
 
-  // Upcoming games, confirmed by Casey as three separate projects, each shown
-  // under a working title. Only the names and the player count come from Casey;
-  // everything else stays empty until confirmed.
-  // TODO(casey): when a name is final, update `title` and drop `workingTitle`.
-  // TODO(casey): each cover.svg is placeholder art made for the hub; replace with
-  // a 1280×720 cover.webp when real art exists.
+  // Names, browser platform, creators and coming-soon status confirmed 2026-11-10.
+  // TODO(casey): each cover.webp below is concept art rendered from
+  // art/covers/<slug>.svg (npm run render:covers). Replace it with a real
+  // 1280×720 capture when the game has one, and delete the SVG source.
   {
     slug: "devil-game",
-    title: "Devil Game",
-    workingTitle: true,
-    tagline: "Next on the workbench.",
+    developer: developers.trea,
+    title: "Devil 2",
+    tagline: "A new take. A new tab.",
     description: {
-      short: "Coming soon. Details arrive with the first playable build.",
-      long: "Devil Game is in the works. Genre, controls, and screenshots land here with the first playable build.",
+      short:
+        "A browser-first remake in the works. A familiar idea, a fresh build, and a first playable demo still to come.",
+      long: "Devil 2 is a browser-first remake project by Trea Edwards. Work is underway; the first playable build will bring controls, screenshots, and more details.",
     },
     status: "coming-soon",
     genre: [], // TODO(casey): add the genre once it's settled.
-    platforms: [],
+    platforms: ["Web browser"],
     controls: [],
     techStack: [],
     releaseDate: null,
     accentColor: "#e5484d",
     coverImage: {
-      src: "/games/devil-game/cover.svg",
-      alt: "Placeholder artwork for Devil Game: a red horned circle above a dark horizon",
-      caption: "Placeholder art",
+      src: "/games/devil-game/cover.webp",
+      alt: "Concept illustration for Devil 2: a glowing red portal between angular dark cliffs",
+      caption: "Concept artwork / Gameplay not yet revealed",
       width: 1280,
       height: 720,
     },
@@ -155,25 +175,25 @@ export const games: Game[] = validateGames([
   },
   {
     slug: "untitled-obby",
-    title: "Untitled obby",
-    workingTitle: true,
-    tagline: "An obstacle course for 2–6 players.",
+    developer: developers.casey,
+    title: "Multi Player Obby",
+    tagline: "Good jumps. Better teamwork.",
     description: {
       short:
-        "A multiplayer obby for two to six players. Coming soon. Details arrive with the first playable build.",
-      long: "A 2–6 player obby is in the works. Name, controls, and screenshots land here with the first playable build.",
+        "A co-op obstacle course for 2–6 players. Time your jumps, tackle challenges together, and get the whole crew to the finish.",
+      long: "A browser-first take on the teamwork obby: an obstacle course for 2–6 friends, built around helping each other through tricky jumps and shared challenges. Work in progress; controls and gameplay previews will arrive with a playable build.",
     },
     status: "coming-soon",
     genre: ["Obby", "Multiplayer"],
-    platforms: [],
+    platforms: ["Web browser"],
     controls: [],
     techStack: [],
     releaseDate: null,
     accentColor: "#f5b82e",
     coverImage: {
-      src: "/games/untitled-obby/cover.svg",
-      alt: "Placeholder artwork for an untitled obby: amber platforms climbing to the right, with six player markers",
-      caption: "Placeholder art",
+      src: "/games/untitled-obby/cover.webp",
+      alt: "Concept illustration for Multi Player Obby: colorful floating obstacle platforms and a checkered finish flag",
+      caption: "Concept artwork / Gameplay not yet revealed",
       width: 1280,
       height: 720,
     },
@@ -181,25 +201,26 @@ export const games: Game[] = validateGames([
   },
   {
     slug: "moon-sweeper",
+    developer: developers.casey,
     title: "Moon Sweeper",
-    workingTitle: true,
-    // Casey chose to keep the description minimal for now; add a pitch when ready.
-    tagline: "In the works.",
+    // Concept direction confirmed 2026-11-10; references in docs/CONTENT_SOURCES.md.
+    tagline: "A small brush. A very big job.",
     description: {
-      short: "Coming soon. Details arrive with the first playable build.",
-      long: "Moon Sweeper is in the works. Genre, controls, and screenshots land here with the first playable build.",
+      short:
+        "A browser-first lunar cleanup game in the works. Sweep up moon dust and turn a tiny cleaning job into a bigger adventure.",
+      long: "Inspired by the lunar-cleaning loop of Moon Sweepers and Roblox moon-cleaning games, this browser-first project starts with a simple idea: turn a dusty Moon into a satisfying cleanup job. The planned loop is to sweep, collect, and work toward better tools. Work in progress; final features and controls are still being built.",
     },
     status: "coming-soon",
-    genre: [],
-    platforms: [],
+    genre: ["Simulation", "Lunar cleanup"],
+    platforms: ["Web browser"],
     controls: [],
     techStack: [],
     releaseDate: null,
     accentColor: "#8fb3ff",
     coverImage: {
-      src: "/games/moon-sweeper/cover.svg",
-      alt: "Placeholder artwork for Moon Sweeper: a pale cratered moon rising over a dark lunar horizon",
-      caption: "Placeholder art",
+      src: "/games/moon-sweeper/cover.webp",
+      alt: "Concept illustration for Moon Sweeper: a cratered moon, an abstract lunar tile field, and a sweeping brush",
+      caption: "Concept artwork / Gameplay not yet revealed",
       width: 1280,
       height: 720,
     },

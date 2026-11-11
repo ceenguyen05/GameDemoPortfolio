@@ -1,71 +1,95 @@
+import { SaveGame } from "./SaveGame";
+import { QuickLook } from "./QuickLook";
 import Image from "next/image";
-import Link from "next/link";
+import { SiteLink as Link } from "@/components/ui/SiteLink";
 import type { CSSProperties } from "react";
 import type { Game } from "@/types/game";
 import { Tag } from "@/components/ui/Tag";
+import { Arrow } from "@/components/ui/Arrow";
 import { PlayButton } from "@/components/games/PlayButton";
 import { catalogNumber } from "@/lib/format";
 
 /**
- * One catalog row. The title link stretches over the whole row (details page);
- * the Play control sits above it so both stay separately reachable.
- * Hover or keyboard focus crossfades the cover to the first screenshot.
+ * One library tile. The title link covers the whole tile; the Play control sits
+ * above it so both stay reachable. Hover or focus swaps in the first screenshot.
  */
 export function GameCard({ game, position }: { game: Game; position: number }) {
-  const number = catalogNumber(position);
   const alternate = game.screenshots[0];
   return (
     <li
       data-status={game.status}
+      data-slug={game.slug}
+      data-saved="false"
       style={{ "--game": game.accentColor } as CSSProperties}
-      className="group relative grid gap-4 border-t border-line py-6 lg:grid-cols-12 lg:gap-6 lg:py-8"
+      className="game-tile group"
     >
-      <div className="flex items-center gap-3 lg:col-span-1 lg:flex-col lg:items-start">
-        <span aria-hidden="true" className="size-3 bg-game" />
-        <span className="label text-muted">No. {number}</span>
-      </div>
-
-      <div className="relative aspect-video overflow-hidden bg-sunken lg:col-span-4">
+      <div className="game-tile-media">
+        <span className="tile-light" aria-hidden="true" />
+        <div className="tile-save">
+          <SaveGame slug={game.slug} title={game.title} compact />
+        </div>
         <Image
+          quality={60}
           src={game.coverImage.src}
           alt={game.coverImage.alt}
           fill
-          sizes="(min-width: 1440px) 440px, (min-width: 1024px) 31vw, 100vw"
-          className="object-cover"
+          sizes="(min-width: 1200px) 320px, (min-width: 640px) 45vw, 100vw"
+          className="tile-cover"
         />
         {alternate && (
           <Image
+            quality={60}
             src={alternate.src}
             alt=""
             fill
-            sizes="(min-width: 1440px) 440px, (min-width: 1024px) 31vw, 100vw"
-            className="object-cover opacity-0 transition-opacity duration-200 ease-out group-focus-within:opacity-100 group-hover:opacity-100 motion-reduce:hidden"
+            sizes="(min-width: 1200px) 320px, (min-width: 640px) 45vw, 100vw"
+            className="tile-alternate"
           />
         )}
+        <span className="tile-number" aria-hidden="true">
+          {catalogNumber(position)}
+        </span>
+        <span className="tile-open" aria-hidden="true">
+          <Arrow />
+        </span>
       </div>
-
-      <div className="lg:col-span-4">
-        <h3 className="text-h3">
+      <div className="tile-body">
+        <div className="tile-status">
+          <Tag status={game.status} />
+        </div>
+        <h3>
           <Link
+            prefetch={false}
             href={`/games/${game.slug}`}
-            className="stretched decoration-2 underline-offset-4 group-hover:underline"
+            className="stretched"
           >
             {game.title}
           </Link>
         </h3>
-        {game.workingTitle && (
-          <p className="label mt-1 text-muted">Working title</p>
-        )}
-        <p className="mt-2 font-semibold">{game.tagline}</p>
-        <p className="mt-2 text-sm text-muted">{game.description.short}</p>
-        {game.genre.length > 0 && (
-          <p className="label mt-4 text-muted">{game.genre.join(" · ")}</p>
-        )}
+        <p>{game.description.short}</p>
+        <div className="tile-bottom">
+          <PlayButton game={game} size="md" />
+          <span className="tile-details" aria-hidden="true">
+            Details <Arrow />
+          </span>
+        </div>
       </div>
-
-      <div className="relative z-10 flex flex-col items-start gap-4 lg:col-span-3">
-        <Tag status={game.status} />
-        <PlayButton game={game} size="md" />
+      <div className="tile-quick-row">
+        <QuickLook
+          game={{
+            slug: game.slug,
+            title: game.title,
+            tagline: game.tagline,
+            description: game.description.short,
+            genre: game.genre,
+            platforms: game.platforms,
+            coverImage: game.coverImage,
+            accentColor: game.accentColor,
+            ...(game.status === "live"
+              ? { status: game.status, playUrl: game.playUrl }
+              : { status: game.status }),
+          }}
+        />
       </div>
     </li>
   );

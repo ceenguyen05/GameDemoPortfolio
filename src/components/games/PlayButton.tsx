@@ -1,4 +1,5 @@
-import type { Game } from "@/types/game";
+import type { GameLaunch } from "@/types/gamePreview";
+import { Arrow } from "@/components/ui/Arrow";
 import { statusLabels } from "@/lib/gameStatus";
 import { hostname } from "@/lib/format";
 
@@ -11,7 +12,7 @@ export function PlayButton({
   game,
   size = "lg",
 }: {
-  game: Game;
+  game: GameLaunch;
   size?: "lg" | "md";
 }) {
   if (game.status !== "live")
@@ -56,13 +57,14 @@ export function PlayButton({
         <span className="play-text">
           <span>Play now</span>
           <span aria-hidden="true" className="play-arrow">
-            ↗
+            <Arrow />
           </span>
         </span>
       </a>
       <p className="font-mono text-xs text-muted">
-        {hostname(game.playUrl)} <span aria-hidden="true">↗</span> · opens in a
-        new tab
+        {hostname(game.playUrl)} <Arrow />
+        {/* Tiles are narrow: the link's accessible name already says "new tab". */}
+        {size === "lg" && " · opens in a new tab"}
       </p>
     </div>
   );

@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { open, trackConsole } from "./helpers";
 
 const ACI = "https://aci-series1.vercel.app/";
 const PAGES = [
@@ -10,20 +11,10 @@ const PAGES = [
   "/games/moon-sweeper",
 ];
 
-function trackConsole(page: Page) {
-  const problems: string[] = [];
-  page.on("pageerror", (error) => problems.push(error.message));
-  page.on("console", (message) => {
-    if (["error", "warning"].includes(message.type()))
-      problems.push(message.text());
-  });
-  return problems;
-}
-
 test("Play links are real anchors to the live game in a new tab", async ({
   page,
 }) => {
-  await page.goto("/");
+  await open(page, "/");
   const play = page.getByRole("link", { name: /^Play now: ACI: Series 1/ });
   await expect(play).toHaveCount(2); // featured hero + library row
   for (const link of await play.all()) {
@@ -35,21 +26,18 @@ test("Play links are real anchors to the live game in a new tab", async ({
     );
   }
   await expect(page.getByText("aci-series1.vercel.app").first()).toBeVisible();
-  // Upcoming games are locked, never links, and flagged as working titles.
-  for (const title of ["Devil Game", "Untitled obby", "Moon Sweeper"]) {
+  // Upcoming games are locked, never links, and use the confirmed display names.
+  for (const title of ["Devil 2", "Multi Player Obby", "Moon Sweeper"]) {
     const row = page.locator("li[data-status]", { hasText: title });
     await expect(
       row.getByRole("button", { name: "Coming soon" }),
     ).toBeDisabled();
     await expect(row.getByRole("link", { name: /^Play/ })).toHaveCount(0);
-    await expect(row.getByText("Working title")).toBeVisible();
   }
-  const aciRow = page.locator("li[data-status='live']");
-  await expect(aciRow.getByText("Working title")).toHaveCount(0);
 });
 
 test("library filters show only matching rows", async ({ page }) => {
-  await page.goto("/");
+  await open(page, "/");
   const rows = page.locator("li[data-status]");
   await page.getByRole("button", { name: "Coming soon 3" }).click();
   await expect(rows.filter({ visible: true })).toHaveCount(3);
@@ -67,7 +55,7 @@ test("keyboard: skip link, palette open/search/navigate/close", async ({
   page,
 }) => {
   const problems = trackConsole(page);
-  await page.goto("/");
+  await open(page, "/");
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Skip to content" }),
@@ -94,7 +82,7 @@ test("keyboard: skip link, palette open/search/navigate/close", async ({
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "I write code.",
+    "A place for games.",
   );
   expect(problems).toEqual([]);
 });
@@ -103,8 +91,12 @@ test("keyboard: gallery lightbox steps, closes, returns focus", async ({
   page,
 }) => {
   const problems = trackConsole(page);
-  await page.goto("/games/aci-series-1");
+  await open(page, "/games/aci-series-1");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("ACI");
+  await expect(page.getByRole("button", { name: /^Enlarge: / })).toHaveCount(6);
+  await expect(page.locator(".hero-preview button[aria-pressed]")).toHaveCount(
+    6,
+  );
   const first = page.getByRole("button", { name: /^Enlarge: / }).first();
   await first.focus();
   await page.keyboard.press("Enter");
@@ -112,12 +104,12 @@ test("keyboard: gallery lightbox steps, closes, returns focus", async ({
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("button", { name: /^Close/ })).toBeFocused();
   const title = dialog.getByRole("heading");
-  await expect(title).toHaveText("01 — ACI HQ / Office corridor");
+  await expect(title).toHaveText("01 — ACI HQ / Loading yard");
   await page.keyboard.press("ArrowRight");
-  await expect(title).toHaveText("02 — ACI Building 2 / Atrium");
+  await expect(title).toHaveText("02 — ACI HQ / Assembly line");
   await page.keyboard.press("ArrowLeft");
   await page.keyboard.press("ArrowLeft");
-  await expect(title).toHaveText("03 — Zombies / Main lobby");
+  await expect(title).toHaveText("06 — Zombies / First wave");
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(first).toBeFocused();
@@ -129,7 +121,7 @@ test("sound toggle persists, and still works with storage blocked", async ({
   page,
   browser,
 }) => {
-  await page.goto("/");
+  await open(page, "/");
   const sound = page.getByRole("button", { name: "UI sounds" });
   await expect(sound).toHaveAttribute("aria-pressed", "false");
   await sound.click();
@@ -146,7 +138,7 @@ test("sound toggle persists, and still works with storage blocked", async ({
     });
   });
   const problems = trackConsole(blocked);
-  await blocked.goto("/");
+  await open(blocked, "/");
   const toggle = blocked.getByRole("button", { name: "UI sounds" });
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
@@ -161,7 +153,7 @@ test("every page fits 360px with reduced motion and logs nothing", async ({
   await page.setViewportSize({ width: 360, height: 780 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const path of PAGES) {
-    await page.goto(path);
+    await open(page, path);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - window.innerWidth,
     );
@@ -181,7 +173,7 @@ test("redirects, 404s, metadata and static resources", async ({
     expect((await request.get(path, { maxRedirects: 0 })).status(), path).toBe(
       404,
     );
-  await page.goto("/play/unknown-slug");
+  await open(page, "/play/unknown-slug");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Nothing at this address.",
   );
@@ -220,7 +212,7 @@ test("live: Play opens the game in a new tab; /play redirect lands there", async
   context,
 }) => {
   test.setTimeout(90_000);
-  await page.goto("/");
+  await open(page, "/");
   const [tab] = await Promise.all([
     context.waitForEvent("page"),
     page
@@ -235,16 +227,445 @@ test("live: Play opens the game in a new tab; /play redirect lands there", async
   await expect(page).toHaveURL(`${ACI}`);
 });
 
-test("capture docs/screenshot.png", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1100 });
-  await page.goto("/");
-  await page.evaluate(async () => {
-    await document.fonts.ready;
-    // Only images in the captured viewport matter; lazy ones below never load.
-    const visible = [...document.images].filter(
-      (img) => img.getBoundingClientRect().top < window.innerHeight,
+test("creator information belongs to the correct game, never the shared hub", async ({
+  page,
+}) => {
+  for (const path of ["/", "/about"]) {
+    await open(page, path);
+    await expect(page.locator("body")).not.toContainText("Casey Nguyen");
+    await expect(page.locator("body")).not.toContainText("Trea Edwards");
+    await expect(
+      page.locator('a[href^="mailto:"], a[href*="github.com"]'),
+    ).toHaveCount(0);
+    await expect(page.locator('meta[name="author"]')).toHaveCount(0);
+  }
+  for (const slug of ["aci-series-1", "untitled-obby", "moon-sweeper"]) {
+    await open(page, "/games/" + slug);
+    await expect(
+      page.getByRole("heading", { name: "Casey Nguyen", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "ceen2327@gmail.com" }),
+    ).toHaveAttribute("href", "mailto:ceen2327@gmail.com");
+    await expect(page.locator('meta[name="author"]')).toHaveAttribute(
+      "content",
+      "Casey Nguyen",
     );
-    await Promise.all(visible.map((img) => img.decode().catch(() => {})));
+  }
+  await open(page, "/games/devil-game");
+  await expect(
+    page.getByRole("heading", { name: "Trea Edwards", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('meta[name="author"]')).toHaveAttribute(
+    "content",
+    "Trea Edwards",
+  );
+  await expect(
+    page.locator('a[href^="mailto:"], a[href*="github.com"]'),
+  ).toHaveCount(0);
+});
+
+test("featured preview changes with the keyboard and exposes its selection", async ({
+  page,
+}) => {
+  await open(page, "/");
+  const preview = page.getByRole("button", {
+    name: "02: preview ACI HQ / Loading yard",
   });
-  await page.screenshot({ path: "docs/screenshot.png" });
+  await preview.focus();
+  await page.keyboard.press("Enter");
+  await expect(preview).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("ArrowRight");
+  await expect(
+    page.getByRole("button", { name: "03: preview ACI HQ / Assembly line" }),
+  ).toBeFocused();
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.locator(".hero-preview figcaption")).toHaveText(
+    "ACI HQ / Loading yard",
+  );
+  await expect(
+    page.locator(".hero-preview img.preview-current"),
+  ).toHaveAttribute("alt", /loading yard/);
+  await page
+    .getByRole("button", { name: "01: preview Startup / ACI HQ" })
+    .click();
+  await expect(preview).toHaveAttribute("aria-pressed", "false");
+});
+
+test("sharing copies the game page and offers a fallback when clipboard access fails", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await open(page, "/games/aci-series-1");
+  await page.getByRole("button", { name: "Copy game link" }).click();
+  await expect(page.getByRole("button", { name: "Link copied" })).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "https://gamedemoportfolio.vercel.app/games/aci-series-1",
+  );
+  await open(page, "/games/devil-game");
+  await page.evaluate(() =>
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: async () => {
+          throw new Error("Blocked");
+        },
+      },
+      configurable: true,
+    }),
+  );
+  await page.getByRole("button", { name: "Copy game link" }).click();
+  const fallback = page.getByRole("textbox", { name: "Game page link" });
+  await expect(fallback).toHaveValue(
+    "https://gamedemoportfolio.vercel.app/games/devil-game",
+  );
+  await fallback.focus();
+  expect(
+    await fallback.evaluate(
+      (element: HTMLInputElement) => element.selectionEnd,
+    ),
+  ).toBe((await fallback.inputValue()).length);
+});
+
+test("every cover in the deck can be reached by moving across it", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/");
+  const deck = page.locator(".cover-deck");
+  await expect(deck.getByRole("link")).toHaveCount(4);
+  // Let the entrance animation finish so the cards sit in their fan positions.
+  await page.waitForTimeout(1200);
+  const box = (await deck.boundingBox())!;
+  const y = box.y + box.height * 0.55;
+
+  // Sweep the pointer across the fan and record each card as it is raised.
+  const sweep = async (from: number, to: number) => {
+    const raised: string[] = [];
+    for (let step = 0; step <= 60; step++) {
+      await page.mouse.move(from + ((to - from) * step) / 60, y);
+      await page.waitForTimeout(30);
+      const label = await page.evaluate(
+        () =>
+          document
+            .querySelector(".deck-card:hover")
+            ?.getAttribute("aria-label") ?? null,
+      );
+      if (label && raised.at(-1) !== label) raised.push(label);
+    }
+    return raised;
+  };
+  const order = [
+    "Explore ACI: Series 1",
+    "Explore Devil 2",
+    "Explore Multi Player Obby",
+    "Explore Moon Sweeper",
+  ];
+  expect(await sweep(box.x + 20, box.x + box.width - 20)).toEqual(order);
+  expect(await sweep(box.x + box.width - 20, box.x + 20)).toEqual(
+    [...order].reverse(),
+  );
+});
+
+test("source and share links on a game page open in a new tab", async ({
+  page,
+}) => {
+  await open(page, "/games/aci-series-1");
+  const source = page.getByRole("link", {
+    name: /github\.com\/ceenguyen05\/ACI-SND/,
+  });
+  await expect(source).toHaveAttribute(
+    "href",
+    "https://github.com/ceenguyen05/ACI-SND",
+  );
+  await expect(source).toHaveAttribute("target", "_blank");
+  await expect(source).toHaveAttribute("rel", /noopener/);
+  const maker = page.getByRole("link", { name: "GitHub", exact: true });
+  await expect(maker).toHaveAttribute("target", "_blank");
+});
+
+test("sections below the fold reveal on scroll and are never left hidden", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await open(page, "/");
+  const banner = page.locator(".share-banner");
+  await expect(banner).toHaveAttribute("data-reveal", "pending");
+  await banner.scrollIntoViewIfNeeded();
+  await expect(banner).toHaveAttribute("data-reveal", "");
+  await expect(banner).toHaveCSS("opacity", "1");
+
+  // With reduced motion nothing is hidden in the first place.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.locator('[data-reveal="pending"]')).toHaveCount(0);
+});
+
+test("saved picks persist and follow the visitor between the library and game pages", async ({
+  page,
+}) => {
+  await open(page, "/");
+  await page
+    .getByRole("button", { name: "Save for later: Moon Sweeper", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Saved: Moon Sweeper", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: /^Saved 1$/ }).click();
+  await expect(
+    page.locator("li[data-status]").filter({ visible: true }),
+  ).toHaveCount(1);
+  await expect(
+    page.locator("li[data-status]").filter({ visible: true }),
+  ).toContainText("Moon Sweeper");
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Saved: Moon Sweeper", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page
+    .locator("li[data-slug='moon-sweeper']")
+    .getByRole("link", { name: "Moon Sweeper", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Saved: Moon Sweeper", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page
+    .getByRole("button", { name: "Saved: Moon Sweeper", exact: true })
+    .click();
+  await open(page, "/");
+  await page.getByRole("button", { name: /^Saved 0$/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Your next favorites belong here." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Explore all games" }).click();
+  await expect(
+    page.locator("li[data-status]").filter({ visible: true }),
+  ).toHaveCount(4);
+});
+
+test("removing the last saved tile returns focus to the saved filter", async ({
+  page,
+}) => {
+  await open(page, "/");
+  await page
+    .getByRole("button", { name: "Save for later: Devil 2", exact: true })
+    .click();
+  await page.getByRole("button", { name: /^Saved 1$/ }).click();
+  await page
+    .getByRole("button", { name: "Saved: Devil 2", exact: true })
+    .click();
+  await expect(page.getByRole("button", { name: /^Saved 0$/ })).toBeFocused();
+  await expect(
+    page.locator("li[data-status]").filter({ visible: true }),
+  ).toHaveCount(0);
+});
+
+test("saved games work for the visit when browser storage is blocked", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    Object.defineProperty(window, "localStorage", {
+      get() {
+        throw new DOMException("Blocked", "SecurityError");
+      },
+    }),
+  );
+  const problems = trackConsole(page);
+  await open(page, "/");
+  await page
+    .getByRole("button", {
+      name: "Save for later: Multi Player Obby",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("button", { name: /^Saved 1$/ }).click();
+  await expect(page.getByText("Saved for this visit.")).toBeVisible();
+  await expect(
+    page.locator("li[data-status]").filter({ visible: true }),
+  ).toHaveCount(1);
+  expect(problems).toEqual([]);
+});
+
+test("saved filters ignore stale or malformed storage entries", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "playroom-saved-games",
+      '["unknown-game",null,123,"moon-sweeper","moon-sweeper"]',
+    ),
+  );
+  await open(page, "/");
+  await expect(page.getByRole("button", { name: /^Saved 1$/ })).toBeVisible();
+  await page.evaluate(() => {
+    localStorage.setItem("playroom-saved-games", "broken json");
+    window.dispatchEvent(
+      new StorageEvent("storage", { key: "playroom-saved-games" }),
+    );
+  });
+  await expect(page.getByRole("button", { name: /^Saved 0$/ })).toBeVisible();
+});
+
+test("quick look is keyboard accessible and keeps live launches separate from upcoming games", async ({
+  page,
+}) => {
+  const problems = trackConsole(page);
+  await open(page, "/");
+  const trigger = page.getByRole("button", {
+    name: "Quick look: ACI: Series 1",
+    exact: true,
+  });
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog", {
+    name: "ACI: Series 1",
+    exact: true,
+  });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /Close/ })).toBeFocused();
+  const play = dialog.getByRole("link", { name: /^Play now/ });
+  await expect(play).toHaveAttribute("href", ACI);
+  await expect(play).toHaveAttribute("target", "_blank");
+  await dialog
+    .getByRole("button", { name: "Save for later: ACI: Series 1", exact: true })
+    .click();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await expect(page.getByRole("button", { name: /^Saved 1$/ })).toBeVisible();
+  await page
+    .getByRole("button", { name: "Quick look: Devil 2", exact: true })
+    .click();
+  const upcoming = page.getByRole("dialog", { name: "Devil 2", exact: true });
+  await expect(
+    upcoming.getByRole("button", { name: "Coming soon", exact: true }),
+  ).toBeDisabled();
+  await expect(upcoming.getByRole("link", { name: /^Play now/ })).toHaveCount(
+    0,
+  );
+  await upcoming.getByRole("link", { name: "Explore the game" }).click();
+  await expect(page).toHaveURL(/games\/devil-game$/);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(problems).toEqual([]);
+});
+
+test("touch gestures change previews horizontally without intercepting vertical scroll", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    reducedMotion: "reduce",
+  });
+  const page = await context.newPage();
+  await open(page, "/games/aci-series-1");
+  const preview = page.locator(".preview-image");
+  await preview.scrollIntoViewIfNeeded();
+  const box = (await preview.boundingBox())!;
+  const cdp = await context.newCDPSession(page);
+  const x = box.x + box.width * 0.7,
+    y = box.y + box.height * 0.5;
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x, y }],
+  });
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [{ x: x - 90, y: y + 2 }],
+  });
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await expect(page.locator(".hero-preview figcaption")).toHaveText(
+    "ACI HQ / Loading yard",
+  );
+  await expect(preview).toHaveCSS("touch-action", "pan-y pinch-zoom");
+  await context.close();
+});
+
+test("motion preference changes reveal pending sections and turn off pointer lighting", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await open(page, "/");
+  const tile = page.locator("li[data-slug='aci-series-1']");
+  await tile.scrollIntoViewIfNeeded();
+  await tile.hover();
+  await expect(tile).toHaveAttribute("data-lit", "");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(tile).not.toHaveAttribute("data-lit", "");
+  await expect(page.locator('[data-reveal="pending"]')).toHaveCount(0);
+});
+
+test("quick look fits narrow phones", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  const problems = trackConsole(page);
+  await open(page, "/");
+  await expect(
+    page.getByRole("dialog", { name: "Moon Sweeper", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Quick look: Moon Sweeper", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", {
+    name: "Moon Sweeper",
+    exact: true,
+  });
+  await expect(dialog).toBeVisible();
+  const box = (await dialog.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(360);
+  expect(
+    await dialog.evaluate((el) => el.scrollWidth - el.clientWidth),
+  ).toBeLessThanOrEqual(0);
+  await page.keyboard.press("Escape");
+  expect(problems).toEqual([]);
+});
+
+test("ACI captures appear across the collection and all six gallery images load", async ({
+  page,
+}) => {
+  await open(page, "/");
+  const cover = /url=%2Fgames%2Faci-series-1%2Fcover.webp/;
+  await expect(
+    page.locator('.deck-card[href="/games/aci-series-1"] img'),
+  ).toHaveAttribute("src", cover);
+  await expect(
+    page.locator(".hero-preview img.preview-current"),
+  ).toHaveAttribute("src", cover);
+  const tile = page.locator('[data-slug="aci-series-1"]');
+  await expect(tile.locator("img.tile-cover")).toHaveAttribute("src", cover);
+  await expect(tile.locator("img.tile-alternate")).toHaveAttribute(
+    "src",
+    /screenshot-01.webp/,
+  );
+  await page
+    .getByRole("button", { name: "Quick look: ACI: Series 1", exact: true })
+    .click();
+  await expect(page.getByRole("dialog").locator("img")).toHaveAttribute(
+    "src",
+    cover,
+  );
+  await page.keyboard.press("Escape");
+  await page.locator('.deck-card[href="/games/aci-series-1"]').click();
+  await expect(page).toHaveURL(/games\/aci-series-1$/);
+  await expect(
+    page.locator(".hero-preview img.preview-current"),
+  ).toHaveAttribute("src", cover);
+  await expect(page.getByRole("button", { name: /^Enlarge: / })).toHaveCount(6);
+  const images = page
+    .getByRole("button", { name: /^Enlarge: / })
+    .locator("img");
+  for (const img of await images.all()) {
+    await img.scrollIntoViewIfNeeded();
+    await expect(img).toBeVisible();
+    expect(
+      await img.evaluate(async (el: HTMLImageElement) => {
+        await el.decode();
+        return el.naturalWidth > 0;
+      }),
+    ).toBe(true);
+  }
 });

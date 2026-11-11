@@ -1,9 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { games, liveGames } from "../src/content/games";
 import { validateGames } from "../src/lib/validateGames";
 import { createGameRedirects } from "../src/lib/gameRedirects";
 import { contrastRatio } from "../src/lib/color";
+import { theme } from "../src/lib/theme";
 import type { Game } from "../src/types/game";
 
 const live = liveGames[0];
@@ -79,13 +81,13 @@ test("rejects malformed changelog entries", () => {
   );
 });
 
-test("rejects accents too dark to sit behind ink glyphs", () => {
+test("rejects accents too dark to sit behind dark glyphs", () => {
   assert.throws(
     () => validateGames([{ ...live, accentColor: "#24302b" }]),
-    /contrast against ink/,
+    /contrast against the dark glyph color/,
   );
   for (const game of games)
-    assert.ok(contrastRatio(game.accentColor, "#1b2220") >= 3, game.slug);
+    assert.ok(contrastRatio(game.accentColor, theme.onAccent) >= 3, game.slug);
 });
 
 test("redirects only live games and never makes a permanent redirect", () => {
@@ -120,4 +122,61 @@ test("rejects cross-project asset paths", () => {
       ]),
     /images must live/,
   );
+});
+
+test("creator names and links are validated per game", () => {
+  assert.throws(
+    () => validateGames([{ ...live, developer: { name: "" } }]),
+    /developer.name/,
+  );
+  assert.throws(
+    () =>
+      validateGames([
+        {
+          ...live,
+          developer: { name: "Maker", githubUrl: "javascript:alert(1)" },
+        },
+      ]),
+    /developer.githubUrl/,
+  );
+  assert.throws(
+    () =>
+      validateGames([
+        { ...live, developer: { name: "Maker", email: "invalid" } },
+      ]),
+    /developer.email/,
+  );
+  assert.equal(
+    games.find((game) => game.slug === "devil-game")?.developer.name,
+    "Trea Edwards",
+  );
+});
+
+test("rejects SVG covers, which are slow to render as images", () => {
+  assert.throws(
+    () =>
+      validateGames([
+        {
+          ...live,
+          coverImage: {
+            ...live.coverImage,
+            src: "/games/aci-series-1/cover.svg",
+          },
+        },
+      ]),
+    /use WebP, AVIF, PNG or JPEG/,
+  );
+});
+
+test("theme.ts matches the CSS tokens it mirrors", () => {
+  const css = readFileSync(
+    new URL("../src/styles/tokens.css", import.meta.url),
+    "utf8",
+  );
+  const token = (name: string) =>
+    css.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`, "i"))?.[1];
+  const { onAccent, ...rest } = theme;
+  assert.equal(token("on-accent"), onAccent);
+  for (const [name, value] of Object.entries(rest))
+    assert.equal(token(name), value, name);
 });

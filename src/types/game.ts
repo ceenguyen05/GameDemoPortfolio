@@ -1,3 +1,5 @@
+import type { Developer } from "./developer";
+
 export type GameStatus = "live" | "in-development" | "coming-soon";
 
 export type GameImage = {
@@ -25,9 +27,9 @@ export type ChangelogEntry = {
 
 type GameBase = {
   slug: string;
+  /** Who made it; shown on the game's page only. See src/content/developers.ts. */
+  developer: Developer;
   title: string;
-  /** Show a "Working title" label wherever the title appears prominently. */
-  workingTitle?: boolean;
   tagline: string;
   description: { short: string; long: string };
   genre: string[];
@@ -39,7 +41,7 @@ type GameBase = {
   repoUrl?: string;
   /** YYYY-MM-DD, or null until confirmed. */
   releaseDate: string | null;
-  /** Six-digit hex. Tints the game's card and pages; needs 3:1 against ink. */
+  /** Six-digit hex. Tints the game's card and pages; needs 3:1 against dark glyphs. */
   accentColor: string;
   coverImage: GameImage;
   screenshots: GameImage[];

@@ -1,0 +1,61 @@
+/* The Play button: light slab, game-accent launch block and base. */
+@layer components {
+  .play {
+    display: inline-flex;
+    align-items: stretch;
+    min-height: 3.5rem;
+    margin-bottom: var(--press);
+    border-radius: 3px;
+    background: var(--ink);
+    color: var(--on-accent);
+    box-shadow: 0 var(--press) 0 0 var(--game);
+    transition:
+      transform 60ms linear,
+      box-shadow 60ms linear;
+  }
+  .play:active {
+    transform: translateY(var(--press));
+    box-shadow: 0 0 0 0 var(--game);
+  }
+  .play:focus-visible {
+    outline-offset: 5px;
+  }
+  .play-block {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    border-radius: 3px 0 0 3px;
+    background: var(--game);
+    color: var(--on-accent);
+  }
+  .play-text {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0 1.125rem 0 1.25rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .play-arrow {
+    transition: transform 120ms ease-out;
+  }
+  .play:hover .play-arrow {
+    transform: translate(2px, -2px);
+  }
+  .play-md {
+    min-height: 3rem;
+  }
+  .play-md .play-block {
+    width: 3rem;
+  }
+  .play-md .play-text {
+    font-size: 1rem;
+    gap: 1.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play:active {
+    transform: none;
+  }
+}

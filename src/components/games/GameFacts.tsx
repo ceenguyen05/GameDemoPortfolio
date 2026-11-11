@@ -1,4 +1,5 @@
 import type { Game } from "@/types/game";
+import { Arrow } from "@/components/ui/Arrow";
 import { Tag } from "@/components/ui/Tag";
 import { siteConfig } from "@/lib/siteConfig";
 import { displayUrl, formatDate } from "@/lib/format";
@@ -55,10 +56,12 @@ export function GameFacts({ game }: { game: Game }) {
       value: (
         <a
           href={game.repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="font-mono text-xs underline decoration-line-strong underline-offset-4 hover:decoration-ink"
         >
-          {breakAtSlashes(displayUrl(game.repoUrl))}{" "}
-          <span aria-hidden="true">↗</span>
+          {breakAtSlashes(displayUrl(game.repoUrl))} <Arrow />
+          <span className="sr-only"> (opens in a new tab)</span>
         </a>
       ),
     },
@@ -80,7 +83,7 @@ export function GameFacts({ game }: { game: Game }) {
   const rows = candidates.filter((row): row is Row => Boolean(row));
 
   return (
-    <dl className="border-t border-ink">
+    <dl className="border-t border-line-strong">
       {rows.map((row) => (
         <div
           key={row.term}

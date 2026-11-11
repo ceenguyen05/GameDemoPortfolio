@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SiteLink as Link } from "@/components/ui/SiteLink";
 import type { CSSProperties } from "react";
 import type { Game } from "@/types/game";
 import { GameHero } from "@/components/games/GameHero";
@@ -6,6 +6,8 @@ import { GameFacts } from "@/components/games/GameFacts";
 import { Gallery } from "@/components/games/Gallery";
 import { ControlsList } from "@/components/games/ControlsList";
 import { Changelog } from "@/components/games/Changelog";
+import { DeveloperCard } from "@/components/games/DeveloperCard";
+import { ShareGame } from "@/components/games/ShareGame";
 import { PlayButton } from "@/components/games/PlayButton";
 import { Button } from "@/components/ui/Button";
 import { statusLabels } from "@/lib/gameStatus";
@@ -39,12 +41,17 @@ export function GameDetails({ game }: { game: Game }) {
         </aside>
         <div className="space-y-section lg:col-span-8 lg:col-start-5">
           <section aria-labelledby="overview-title">
-            <h2 id="overview-title" className="label border-t border-ink pt-3">
+            <h2
+              id="overview-title"
+              className="label border-t border-line-strong pt-3"
+            >
               Overview
             </h2>
             <p className="mt-6 max-w-3xl text-lead">{game.description.long}</p>
           </section>
           <Gallery images={game.screenshots} />
+          <DeveloperCard developer={game.developer} />
+          <ShareGame title={game.title} path={`/games/${game.slug}`} />
           <ControlsList game={game} />
           <Changelog entries={game.changelog ?? []} />
         </div>
@@ -52,7 +59,8 @@ export function GameDetails({ game }: { game: Game }) {
 
       <section
         aria-labelledby="launch-title"
-        className="defer-render mt-section grid gap-8 border border-t-4 border-line border-t-game bg-surface p-6 sm:p-10 lg:grid-cols-12 lg:items-center"
+        data-reveal=""
+        className="launch-band defer-render mt-section grid gap-8 p-6 sm:p-10 lg:grid-cols-12 lg:items-center"
       >
         <div className="lg:col-span-7">
           <p className="label text-muted">

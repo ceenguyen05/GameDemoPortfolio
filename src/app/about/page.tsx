@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { AboutView } from "@/components/views/AboutView";
 export const metadata: Metadata = {
-  title: "About Casey",
+  title: "About the collection",
   description:
-    "Casey Nguyen, software engineer building browser-first games. Find the source code and get in touch.",
+    "A shared home for browser games, their creators, and the people who play them.",
   alternates: { canonical: "/about" },
   openGraph: {
-    title: "About Casey Nguyen",
-    description: "Software engineer. Browser-first games.",
+    title: "About the collection",
+    description: "Small games. Good company.",
     url: "/about",
     images: ["/opengraph-image"],
   },

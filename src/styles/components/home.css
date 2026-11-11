@@ -1,0 +1,474 @@
+/* Home page: intro, cover deck, spotlight heading, share banner. */
+@layer components {
+  .home-intro {
+    display: grid;
+    grid-template-columns: 1.06fr 1fr;
+    align-items: center;
+    min-height: 610px;
+    gap: 16px;
+    padding: 65px 0 72px;
+  }
+  .intro-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .tiny-star {
+    font-size: 24px;
+    color: var(--signal);
+  }
+  .intro-copy h1 {
+    font-size: clamp(56px, 6.8vw, 98px);
+    line-height: 1.02;
+    letter-spacing: -0.075em;
+    margin-top: 25px;
+    font-weight: 800;
+  }
+  .intro-copy h1 > span {
+    color: var(--signal);
+  }
+  .intro-description {
+    max-width: 410px;
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-top: 25px;
+  }
+  .intro-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 32px;
+  }
+  .availability {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .availability i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 12px #d9f94544;
+  }
+  .availability-divider {
+    color: var(--line-strong);
+    margin: 0 3px;
+  }
+  .cover-deck-wrap {
+    height: 440px;
+    position: relative;
+    isolation: isolate;
+  }
+  .cover-deck {
+    /* Fan geometry. Breakpoints only change these numbers. */
+    --step: 79px;
+    --arc: 12px;
+    --tilt: 13deg;
+    --lift: -35px;
+    --grow: 1.07;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .deck-orbit {
+    position: absolute;
+    width: 86%;
+    height: 85%;
+    left: 10%;
+    top: 4%;
+    border: 1px solid #d9f97815;
+    border-radius: 50%;
+    transform: rotate(-25deg);
+    background: radial-gradient(ellipse, #d9f97808, transparent 68%);
+  }
+  .deck-orbit::after {
+    content: "";
+    position: absolute;
+    inset: 26px -28px;
+    border: 1px dashed #d9f97818;
+    border-radius: 50%;
+  }
+  .deck-card {
+    position: absolute;
+    width: 190px;
+    height: 264px;
+    border: 5px solid var(--surface);
+    border-radius: 13px;
+    background: var(--surface);
+    box-shadow: 0 20px 35px #0007;
+    transform-origin: 50% 95%;
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.35s;
+    overflow: hidden;
+    /* Position in the fan: 0 at the center, negative to the left. */
+    --offset: calc(var(--slot) - (var(--count) - 1) / 2);
+    --x: calc(var(--offset) * var(--step));
+    transform: translate(
+        var(--x),
+        calc(var(--offset) * var(--offset) * var(--arc))
+      )
+      rotate(calc(var(--offset) * var(--tilt)));
+  }
+  .deck-card:hover,
+  .deck-card:focus-visible {
+    z-index: 5;
+    transform: translate(var(--x), var(--lift)) rotate(0deg) scale(var(--grow));
+    box-shadow: 0 25px 50px #000b;
+    outline-color: var(--game);
+  } /* A raised card would hide the card to its right, so that neighbor stacks
+     just below it and stays reachable when the pointer moves across the fan. */
+  .deck-card:is(:hover, :focus-visible) + .deck-card {
+    z-index: 4;
+  }
+  .deck-image {
+    height: 216px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 7px 7px 0 0;
+  }
+  .deck-card-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 12px 8px;
+    white-space: nowrap;
+  }
+  .deck-card-label span {
+    color: var(--game);
+    font-size: 17px;
+  }
+  .deck-star {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 70px;
+    color: var(--signal);
+    transform: rotate(15deg);
+  }
+  .deck-plus {
+    position: absolute;
+    left: 4%;
+    bottom: 14%;
+    font-size: 35px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .deck-caption {
+    position: absolute;
+    bottom: 0;
+    left: 24%;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    transform: rotate(-5deg);
+    color: var(--muted);
+  }
+  .deck-caption span {
+    font-size: 32px;
+    position: absolute;
+    top: -28px;
+    left: -23px;
+    color: var(--signal);
+  }
+  .section-kicker {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  .section-kicker > span:last-child {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .section-kicker > span:last-child > span {
+    color: var(--signal);
+    margin-left: 15px;
+    font-size: 19px;
+  }
+  .share-banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 45px;
+    padding: 55px;
+    margin-top: 100px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background:
+      radial-gradient(ellipse at 100% 100%, #d9f9780b, transparent 65%),
+      var(--surface);
+    overflow: hidden;
+  }
+  .share-art {
+    display: grid;
+    place-items: center;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+    border: 1px solid #d9f97855;
+    border-radius: 35px;
+    font-size: 110px;
+    line-height: 1;
+    color: var(--signal);
+    transform: rotate(-12deg);
+    box-shadow: 10px 10px 0 #d9f9780c;
+    transition: transform 0.35s var(--ease-out);
+  }
+  .share-banner h2 {
+    font-size: 44px;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+    margin-top: 16px;
+  }
+  .share-banner p:not(.label) {
+    max-width: 410px;
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 18px;
+  }
+  .banner-link {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    align-self: flex-end;
+    padding-bottom: 10px;
+  }
+  .banner-link:hover {
+    color: var(--signal);
+  }
+  .share-banner:hover .share-art {
+    transform: rotate(0deg) translate(3px, -3px);
+  }
+  .banner-link span {
+    display: inline-block;
+    transition: transform 0.2s var(--ease-out);
+  }
+  .banner-link:hover span {
+    transform: translateX(4px);
+  }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .intro-copy {
+    animation: intro-in 0.65s ease-out both;
+  }
+  .cover-deck-wrap {
+    animation: intro-in 0.8s ease-out both;
+  }
+}
+@media (max-width: 1199px) {
+  .cover-deck {
+    --step: 60px;
+    --lift: -25px;
+    --grow: 1;
+  }
+  .deck-card {
+    width: 156px;
+    height: 235px;
+  }
+  .deck-image {
+    height: 190px;
+  }
+  .deck-card-label {
+    font-size: 10px;
+    padding: 10px 5px;
+  }
+  .share-banner {
+    gap: 30px;
+    padding: 35px;
+  }
+  .share-art {
+    width: 110px;
+    height: 110px;
+    font-size: 85px;
+  }
+  .share-banner h2 {
+    font-size: 38px;
+  }
+  .banner-link {
+    white-space: normal;
+    max-width: 118px;
+  }
+}
+@media (max-width: 900px) {
+  .home-intro {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 50px 0 55px;
+  }
+  .intro-copy h1 {
+    font-size: clamp(62px, 11vw, 88px);
+  }
+  .intro-copy {
+    max-width: 650px;
+  }
+  .cover-deck-wrap {
+    height: 370px;
+    max-width: 550px;
+    width: 100%;
+    justify-self: center;
+    margin-top: 35px;
+  }
+  .deck-star {
+    right: 7%;
+    font-size: 55px;
+  }
+  .deck-orbit {
+    width: 76%;
+    left: 12%;
+  }
+  .deck-caption {
+    left: 31%;
+  }
+  .share-banner {
+    flex-wrap: wrap;
+  }
+  .share-art {
+    width: 95px;
+    height: 95px;
+    font-size: 75px;
+  }
+  .share-banner > div {
+    flex: 1;
+    min-width: 200px;
+  }
+  .banner-link {
+    margin-left: 125px;
+    max-width: none;
+    align-self: auto;
+  }
+}
+@media (max-width: 639px) {
+  .cover-deck {
+    --step: 36px;
+    --arc: 10px;
+    --tilt: 10deg;
+  }
+  .deck-orbit::after {
+    inset: 26px 0;
+  }
+  .home-intro {
+    padding-top: 32px;
+  }
+  .intro-label {
+    font-size: 11px;
+    gap: 8px;
+  }
+  .intro-copy h1 {
+    font-size: clamp(55px, 12vw, 76px);
+    margin-top: 20px;
+  }
+  .intro-description {
+    font-size: 15px;
+    max-width: 330px;
+    margin-top: 22px;
+  }
+  .intro-actions {
+    gap: 18px;
+    margin-top: 25px;
+  }
+  .cover-deck-wrap {
+    height: 325px;
+    margin-top: 40px;
+  }
+  .deck-card {
+    width: 130px;
+    height: 180px;
+  }
+  .deck-image {
+    height: 137px;
+  }
+  .deck-card-label {
+    font-size: 10px;
+  }
+  .deck-card-label span {
+    font-size: 13px;
+  }
+  .deck-star {
+    right: 2%;
+    top: -8px;
+    font-size: 48px;
+  }
+  .deck-plus {
+    left: 0;
+    bottom: 10%;
+  }
+  .deck-caption {
+    font-size: 10px;
+    left: 27%;
+    bottom: -5px;
+  }
+  .section-kicker > span:last-child {
+    display: none;
+  }
+  .share-banner {
+    padding: 27px;
+    gap: 28px;
+    margin-top: 65px;
+  }
+  .share-art {
+    width: 75px;
+    height: 75px;
+    font-size: 60px;
+    border-radius: 22px;
+  }
+  .share-banner > div {
+    flex-basis: 100%;
+  }
+  .share-banner h2 {
+    font-size: 39px;
+  }
+  .banner-link {
+    margin-left: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cover-deck {
+    --lift: 0px;
+    --grow: 1;
+  }
+}
+@keyframes intro-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Entrance: the covers are dealt from a stack into the fan, once. */
+@media (prefers-reduced-motion: no-preference) {
+  .deck-card {
+    animation: deck-deal 0.7s var(--ease-out) backwards;
+    animation-delay: calc(var(--slot) * 70ms + 120ms);
+  }
+  .deck-star {
+    animation: spark-in 0.9s var(--ease-out) 0.45s backwards;
+  }
+}
+@keyframes deck-deal {
+  from {
+    transform: translate(0, 28px) rotate(0deg) scale(0.94);
+  }
+}
+@keyframes spark-in {
+  from {
+    opacity: 0;
+    transform: rotate(-110deg) scale(0.4);
+  }
+}

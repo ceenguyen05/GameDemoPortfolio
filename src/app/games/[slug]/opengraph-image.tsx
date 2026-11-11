@@ -5,7 +5,7 @@ import { statusLabels } from "@/lib/gameStatus";
 import { catalogNumber } from "@/lib/format";
 import { siteConfig } from "@/lib/siteConfig";
 
-export const alt = "A browser game by Casey Nguyen";
+export const alt = `Explore a game from the ${siteConfig.name} collection`;
 export const size = ogSize;
 export const contentType = "image/png";
 
@@ -22,13 +22,7 @@ export default async function Image({
   if (!game) notFound();
   const host = new URL(siteConfig.url).host;
   return createOgImage({
-    eyebrow: [
-      `No. ${catalogNumber(games.indexOf(game) + 1)}`,
-      statusLabels[game.status],
-      game.workingTitle && "Working title",
-    ]
-      .filter(Boolean)
-      .join(" · "),
+    eyebrow: `No. ${catalogNumber(games.indexOf(game) + 1)} · ${statusLabels[game.status]}`,
     title: game.title,
     subtitle: game.tagline,
     footer:

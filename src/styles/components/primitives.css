@@ -1,0 +1,103 @@
+/* Shared building blocks used across pages. */
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: var(--content);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Mono metadata: catalog numbers, section labels, captions. */
+  .label {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .keycap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--line-strong);
+    border-bottom-width: 3px;
+    border-radius: 3px;
+    background: var(--surface);
+    color: var(--ink);
+    font:
+      400 0.75rem/1 var(--font-mono),
+      ui-monospace,
+      monospace;
+    white-space: nowrap;
+  }
+
+  /* A link whose hit area covers its positioned ancestor (game rows). */
+  .stretched::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .stretched:focus-visible {
+    outline: none;
+  }
+  .stretched:focus-visible::after {
+    outline: 2px solid var(--signal);
+    outline-offset: -2px;
+  }
+
+  /* Below-the-fold sections skip layout and paint until they near the
+     viewport. Content stays in the accessibility tree and find-in-page. */
+  .defer-render {
+    content-visibility: auto;
+    /* Reserve height only. A single-value contain-intrinsic-size also sets
+       width, which widened the mobile grid past the viewport. */
+    contain-intrinsic-block-size: auto 720px;
+  }
+  .browse-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 49px;
+    padding: 12px 20px;
+    background: var(--signal);
+    color: var(--on-accent);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    transition:
+      transform 0.2s,
+      background 0.2s;
+    cursor: pointer;
+  }
+  .browse-button:hover {
+    transform: translateY(-3px);
+    background: #e7ffab;
+  }
+  .browse-button > span {
+    display: inline-flex;
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.2s var(--ease-out);
+  }
+  /* Inline SVG icons (Arrow, Spark) scale with the surrounding text. */
+  .icon {
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    vertical-align: -0.08em;
+  }
+  .spark {
+    display: block;
+    width: 0.8em;
+    height: 0.8em;
+  }
+  .browse-button:hover > span {
+    transform: translate(2px, 2px);
+  }
+}

@@ -4,6 +4,16 @@ The hub deploys through Vercel's Git integration: every push to `main` goes to
 production at <https://gamedemoportfolio.vercel.app>, and every pull request gets a
 preview URL. No GitHub workflow deploys anything; CI only checks.
 
+## Before pushing
+
+Run lint, typecheck, format:check, unit tests, build, test:browser, and check:links (commands in the README). The browser suite starts an isolated production server; set TEST_PORT if 3100 is occupied. CI installs Chromium; local checks use Google Chrome.
+
+GitHub CI and Vercel's Git deploy start independently on a push. A failing CI job does not automatically prevent Vercel from publishing the same commit. Use a preview branch and required checks before merging when you need that gate. No push or deployment is performed by the local checks.
+
+After deployment, verify the ACI title-screen cover in the homepage deck, spotlight, library, and game page; six gallery captures; and Play now opening the live game in a new tab. Vercel/Next.js generates image variants from the committed WebP assets.
+
+Reference: [Vercel Git deployments](https://vercel.com/docs/deployments/git).
+
 ## If the site shows Vercel's `NOT_FOUND` page
 
 **Symptom:** `/` returns "404: NOT_FOUND", but files like `/icons/favicon.svg` load.
@@ -79,13 +89,10 @@ After CI has run once on GitHub:
    pass**. Add the check **`checks`** (the CI job).
 4. Turn on **Block force pushes**. Leave Lighthouse (`audit`) optional: it only warns.
 
-If you protect `main` before pushing the rewritten history, the force-push will be
-blocked. Push first, then add the ruleset.
-
 ## What the workflows do
 
 - **`ci.yml`** (push to `main`, PRs): `npm ci`, lint, typecheck, format check, unit
-  tests, build, then a live-link check that warns without failing.
+  tests, build, Chromium installation, and browser interaction checks. The live external-game browser scenario is excluded from the required job; the separate live-link check warns without failing.
 - **`lighthouse.yml`** (PRs): builds, starts the site, audits `/` and
   `/games/aci-series-1` three times on mobile, and warns below 95. It uploads reports
   to temporary public storage and links them in the job summary.
@@ -102,3 +109,13 @@ loudly if `package-lock.json` drifts from `package.json`. Locally, use `npm inst
 - **`npm run dev` can't find `next`.** `node_modules` is incomplete (often from the
   above). Run `npm install` again.
 - **Port 3000 is busy.** `npm run dev -- -p 3001`.
+
+## Local release verification: November 10, 2026
+
+- Production build, lint, typecheck, formatting, unit tests (13), browser scenarios (34), and screenshot generation (4) passed. All six ACI captures decode; the title-screen cover is verified in the homepage deck, spotlight, library, quick look, and ACI page.
+- Repeat section navigation is covered from the homepage, all four game pages, About, the 404 page, and search. Back/Forward, same-page top links, keyboard focus, modifier clicks, and reduced motion pass. Navigation helpers are shared, with dedicated regression tests in `tests/browser/navigation.spec.ts`.
+- The live game link returned HTTP 200; new-tab launch and the share redirect passed.
+- npm audit reported zero vulnerabilities, including development dependencies. Package and lockfile dependencies match. Local documentation links resolve, workflow YAML parses, and generated caches and original capture-session files remain ignored.
+- Previous screenshot-release audit (not rerun for the navigation-only update): mobile Lighthouse, three local runs per page: home performance 63-73 (median 72), ACI 63-77 (median 69). Accessibility, best practices, and SEO were 100 on every run; layout shift was zero. The advisory 95 performance target is not met. Long main-thread tasks remain a performance follow-up; these measurements are local lab results, not Vercel field data. No scores or reports were uploaded.
+
+The required checks pass locally. GitHub Actions and Vercel will run after the changes are committed and pushed; neither remote run has been verified for this uncommitted revision. The workflow now runs the 33 site-owned browser scenarios, with external game availability checked separately as advisory.

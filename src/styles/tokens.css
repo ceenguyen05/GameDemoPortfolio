@@ -1,25 +1,23 @@
-/* Design tokens. Values and contrast notes live in docs/DESIGN.md. */
 :root {
-  --paper: #f4f3ee;
-  --surface: #ffffff;
-  --sunken: #e9e8e1;
-  --ink: #1b2220;
-  --muted: #5c635e;
-  --line: #d6d9d2;
-  --line-strong: #aab1a8;
-  --signal: #24574b;
-
-  /* Each game's card and pages override this with its accentColor. */
+  --paper: #101210;
+  --surface: #191d19;
+  --sunken: #222821;
+  --ink: #f3f4ed;
+  --muted: #abb3a5;
+  --line: #343c31;
+  --line-strong: #697560;
+  --signal: #d9f978;
+  /* Dark text and glyphs on bright fills (signal and game accents). */
+  --on-accent: #101210;
   --game: var(--signal);
-
   --content: 1440px;
-  --gutter: clamp(16px, 4vw, 56px);
+  --gutter: clamp(20px, 4vw, 56px);
   --space-section: 96px;
-  --press: 4px;
-
-  color-scheme: light;
+  --press: 3px;
+  /* Shared easing: quick start, soft landing. */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  color-scheme: dark;
 }
-
 @media (max-width: 767px) {
   :root {
     --space-section: 64px;

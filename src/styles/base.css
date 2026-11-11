@@ -1,0 +1,59 @@
+/* Element defaults, focus and selection, and the global reduced-motion rule. */
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    scroll-padding-top: 24px;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 800;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+/* Scroll reveal. ScrollReveal (components/layout) marks below-the-fold
+   [data-reveal] sections as pending, then clears each one as it scrolls into
+   view. Without JavaScript, or with reduced motion, nothing is ever hidden. */
+[data-reveal] {
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s var(--ease-out);
+}
+[data-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(18px);
+}

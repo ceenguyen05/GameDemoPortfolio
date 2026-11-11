@@ -1,146 +1,128 @@
 # Design
 
-## Direction: a catalog, not a theme
+Updated November 10, 2026. This describes the site as built.
 
-The hub is a neutral, well-kept catalog of games. The site's chrome stays quiet, and each
-game's artwork and accent color supply the personality. A tactical shooter, an obby, and
-a moon game should all look at home on the same page. No part of the chrome borrows any
-single game's genre language: no crosshairs, dossiers, or neon.
+## Identity
 
-What makes it feel made rather than templated:
+**Playroom** is a dark, welcoming home for a growing set of browser games, made to be
+shared with friends. The hub has its own identity and belongs to no single game or
+developer. Each game brings its own artwork and accent color. Names, bios, emails, and
+GitHub links appear only on the page of the game they belong to.
 
-- **Numbered entries.** Every game has a catalog number (`01`, `02`, …) and a color
-  swatch, like spines on a shelf.
-- **Hairline structure.** 1px rules and frames do the work that cards and shadows do in
-  templates. Panels are square-cornered.
-- **Mono metadata.** Destinations, versions, dates, and counts are set in mono, the way a
-  museum wall label is set apart from its title.
-- **Deliberate asymmetry.** Content sits on a 12-column grid with uneven splits (5/7, 4/8,
-  1/4/4/3), never centered stacks.
+References: an independent arcade's colorful cabinets, a record shop's browsable
+covers, and a contemporary editorial portfolio's typography.
 
-References:
-
-1. **The Criterion Collection catalog:** numbered spines, one consistent frame, and every
-   title brings its own art.
-2. **Playdate's game catalog (play.date):** neutral and friendly. Each game's art and
-   color carries the page.
-3. **Museum collection pages (MoMA, the Design Museum):** wall-label metadata, generous
-   whitespace, and titles that do the talking.
-
-## Typography
-
-| Role    | Face                    | Use                                                        |
-| ------- | ----------------------- | ---------------------------------------------------------- |
-| Display | Manrope 800, -0.045em   | Page titles, game titles, section headings                 |
-| Text    | Manrope 400–600         | Body, descriptions, buttons. Same variable file as display |
-| Mono    | IBM Plex Mono 400 / 500 | Labels, catalog numbers, domains, dates, versions, keycaps |
-
-Both load through `next/font/google`, so they're self-hosted at build with no runtime
-Google request and metric-matched fallbacks (no layout shift). Labels use mono at
-12px, uppercase, +0.08em tracking. **Nothing on the site is smaller than 12px.**
-
-Scale (`tailwind.config.ts` → `fontSize`):
-
-| Token     | Size            | Line height |
-| --------- | --------------- | ----------- |
-| `label`   | 12px            | 1.4         |
-| `sm`      | 14px            | 1.55        |
-| `base`    | 16px            | 1.6         |
-| `lead`    | 18–20px (fluid) | 1.5         |
-| `h3`      | 24–28px         | 1.15        |
-| `h2`      | 32–48px         | 1.08        |
-| `display` | 44–88px         | 1.0         |
-| `hero`    | 64–136px        | 0.9         |
+Not used anywhere: military stamps, classified dossiers, neon glows, glass panels,
+gradient lettering, or decorations that move forever.
 
 ## Palette
 
-Light, warm, and neutral. Contrast ratios are measured against `paper`.
+Defined once in `src/styles/tokens.css` and mapped to Tailwind in `tailwind.config.ts`.
+`src/lib/theme.ts` mirrors the values for code that can't read CSS (social images, the
+manifest, the contrast check); a unit test fails if the two drift apart.
 
-| Token         | Value     | Use                                             | Contrast |
-| ------------- | --------- | ----------------------------------------------- | -------- |
-| `paper`       | `#f4f3ee` | Page background                                 | —        |
-| `surface`     | `#ffffff` | Raised panels: game hero, launch band, dialogs  | —        |
-| `sunken`      | `#e9e8e1` | Keycaps, locked controls, image wells           | —        |
-| `ink`         | `#1b2220` | Text, Play button, primary rules                | 14.6:1   |
-| `muted`       | `#5c635e` | Secondary text (5.0:1 even on `sunken`)         | 5.6:1    |
-| `line`        | `#d6d9d2` | Hairlines                                       | —        |
-| `line-strong` | `#aab1a8` | Keycap edges, input borders                     | —        |
-| `signal`      | `#24574b` | The hub's one accent: live status, focus, links | 7.4:1    |
+| Token         | Value     | Use                                                  |
+| ------------- | --------- | ---------------------------------------------------- |
+| `paper`       | `#101210` | Page background                                      |
+| `surface`     | `#191d19` | Panels and cards                                     |
+| `sunken`      | `#222821` | Image wells, locked controls, selected rows          |
+| `ink`         | `#f3f4ed` | Text, the Play button's slab                         |
+| `muted`       | `#abb3a5` | Supporting text                                      |
+| `line`        | `#343c31` | Hairlines and card borders                           |
+| `line-strong` | `#697560` | Section rules, keycap edges                          |
+| `signal`      | `#d9f978` | The hub's accent: primary buttons, focus, live state |
+| `on-accent`   | `#101210` | Dark text and glyphs on `signal` or a game accent    |
+| `game`        | per game  | Each game's `accentColor`, set on its card and pages |
 
-**Game accent (`--game`).** Each card and game page sets `--game` from its
-`accentColor`. It appears only as fills and rules: the catalog swatch, a 4px top rule on
-the game's hero, the Play button's launch block, gallery hover frames, and the version
-chip. It is never used as text on paper, since bright accents fail text contrast there.
-The build rejects any accent under 3:1 against `ink`, because ink glyphs sit on it.
+A game's accent colors its tile rule, the Play button's launch block and base, its
+preview and gallery frames, the maker avatar, and the glow on its closing banner. The
+build rejects accents with less than 3:1 contrast against `on-accent`.
 
-No gradients, glass, glows, or soft drop shadows. There is one hard offset shadow on the
-site, and it belongs to the Play button.
+## Typography
 
-## Grid and spacing
+**Manrope** (variable, via `next/font`) for headings and body. **IBM Plex Mono 400** for
+labels, counters, and keycaps. Headings are large, tight, and left-aligned. Body text and
+labels are 12px or larger. Only the small captions on the decorative cover deck go down
+to 10px, and each of those covers also carries a full accessible name.
 
-- Max content width 1440px. Gutters `clamp(16px, 4vw, 56px)`.
-- 12 columns, 24px gaps (16px below 768px).
-- Spacing uses Tailwind's 4px scale, restricted to 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 /
-  96 / 128. Sections sit 96px apart (64px on mobile), set by `--space-section`.
-- Radius: 0 on panels and images; 3px on keycaps, chips, and buttons.
-- Breakpoints: Tailwind defaults (`sm` 640, `md` 768, `lg` 1024, `xl` 1280). Everything
-  is checked at 360px with no horizontal scroll.
+## Layout
 
-## Page compositions
+- Content is capped at 1440px with 20–56px gutters. Sections sit 96px apart (64px on
+  phones).
+- **Home:** headline and call to action on the left, a fan of game covers on the
+  right; then the featured game; then the library as cover tiles (four columns, two on
+  tablets, one on phones); then a share banner.
+- **Game page:** the same feature panel as its hero, then a sticky fact sheet beside
+  the overview, gallery, maker card, share row, controls, and release notes, and a
+  closing launch banner. Sections with no data are omitted.
+- **About:** what the collection is, two notes, and a directory of every game.
+- Corners: 13–16px on cards and banners, 8px on buttons and chips, 3px on the Play
+  button and keycaps (they read as physical keys).
 
-- **Home:** the intro has the headline on the left over 7 columns and the blurb plus
-  catalog counts on the right over 4. Next comes the featured game as a framed 5/7 split
-  (copy on the left, art on the right) over a fact strip. Then the library: filters, then
-  one row per game (number · art · copy · status and actions), and finally a short note
-  about the maker.
-- **Game page:** breadcrumb, then the hero (same composition as the featured panel),
-  then a 4/8 split. A sticky fact sheet on the left holds status, genre, platforms,
-  release, version, stack, and source. The right column holds the story, gallery,
-  controls, and release notes. A closing launch band finishes the page. Empty sections
-  are omitted rather than padded with "TBA".
-- **About:** one large statement, two paragraphs, and contact rows.
-- **404:** an oversized mono `404`, one line about what happened, and a way back.
+## Graphics
+
+- **Icons are inline SVG** (`ui/Arrow`, `ui/Spark`). The Unicode arrows and asterisk they
+  replaced are drawn as emoji on many phones.
+- **Concept covers** for unreleased games are original vector art in `art/covers/`,
+  rendered to WebP by `npm run render:covers`, and always captioned as concept
+  artwork. SVG files are not used as images: each one cost about 0.7 s of blocked
+  main-thread time on a throttled phone.
+- ACI: Series 1 uses real captures from the game.
 
 ## The Play button
 
-The most distinct control on any page, and the only element with a shadow.
-
-- Ink slab with white Manrope 700 text "Play now". On the left, a square **launch
-  block** in the game's accent holds an ink ▶. A ↗ on the right signals a new tab.
-- **Press:** a 4px hard offset shadow in the game's accent sits under the slab, like
-  the base of a key. On `:active` the
-  slab drops 4px and the shadow collapses to 0 in 60ms, like a physical key bottoming
-  out. Hover nudges the ↗ 2px up and to the right.
-- Always paired with a mono destination label (`aci-series1.vercel.app ↗ · new tab`).
-- Real `<a href>` with `target="_blank" rel="noopener noreferrer"`. The accessible name
-  includes the game and the new-tab behavior.
-- Locked state: flat `sunken` slab, no shadow, no block, with the status text ("Coming
-  soon") and a mono note. It renders as a disabled button, never a link.
-
-Secondary actions (`ui/Button`) are outlined or text-only so they never compete with it.
+The most distinct control on any page: a light slab with dark text, a launch block in
+the game's accent holding a ▶, and a base in the same accent. Pressing it drops the
+slab 3px onto the base in 60ms, like a key. It is always a real link to the game's own
+site, opens in a new tab, and shows the destination domain beside it. Games that aren't
+live get a dashed, disabled control with their status instead.
 
 ## Motion
 
-Motion acts like a game menu: instant feedback, short travel, no floating.
+Every animation is a response or a one-time entrance. Nothing loops.
 
-| Interaction           | What moves                           | Duration / easing |
-| --------------------- | ------------------------------------ | ----------------- |
-| Play press            | translateY 4px, shadow 4px → 0       | 60ms linear       |
-| Card hover / focus    | cover crossfades to first screenshot | 200ms ease-out    |
-| Card hover            | title underlines                     | instant           |
-| Command palette open  | fade + 4px drop (Motion, lazy)       | 120ms ease-out    |
-| Lightbox image change | none; cuts instantly                 | —                 |
-| Filters               | none; rows show or hide instantly    | —                 |
+| Moment               | What happens                                                            | Timing            |
+| -------------------- | ----------------------------------------------------------------------- | ----------------- |
+| Home loads           | Covers are dealt from a stack into the fan; the spark spins in          | 0.7–0.9s, once    |
+| Cover hover or focus | The cover straightens and lifts; the cover to its right stays reachable | 0.35s             |
+| Scrolling            | Sections below the fold fade up as they enter the view                  | 0.5s, once        |
+| Tile hover or focus  | The tile lifts, its cover zooms, and the first screenshot fades in      | 0.25–0.45s        |
+| Choosing a preview   | The new image fades in over the previous one                            | 0.28s             |
+| Changing the filter  | Remaining tiles settle in one after another                             | 0.26s + 40ms each |
+| Play press           | The slab drops onto its base                                            | 60ms              |
+| Small hovers         | Arrows nudge; the logo, spark, share arrow, and avatar straighten       | 0.2–0.6s          |
+| Opening search       | The panel fades and drops 4px (Motion, loaded on demand)                | 0.12s             |
 
-Under `prefers-reduced-motion: reduce`, every transition is removed, the cover
-crossfade is disabled, and the palette appears without movement. Motion (framer-motion)
-loads only with the command palette, so no page pays for it up front.
+With `prefers-reduced-motion: reduce`, entrances, reveals, crossfades, and lifts are
+all removed; nothing is hidden waiting for an animation. The scroll reveal only hides
+sections after its script runs, so the page is complete without JavaScript.
 
-## Accessibility rules
+## Interaction and accessibility
 
-- Focus: 2px `signal` outline with a 3px offset on every interactive element.
-- Accessible names come from visible text plus `sr-only` additions, never an
-  `aria-label` that contradicts what's on screen.
-- Icons and glyph arrows are `aria-hidden`. Decorative numbers are fine; meaningful ones
-  are real text.
-- Sound is optional, off by default, and never the only signal for anything.
+- Every control is reachable by keyboard with a visible lime focus ring.
+- Search opens with ⌘K or Ctrl+K: arrow keys move, Enter opens, Esc closes.
+- The gallery opens in a dialog: ← → step through images, Esc closes, and focus returns
+  to the thumbnail.
+- Accessible names start with the visible text. Links that open a new tab say so.
+- UI sounds are optional and off by default.
+- Everything is checked at 360px wide with no horizontal scroll.
+
+## Where the styles live
+
+`src/styles/globals.css` only imports: `tokens.css`, `base.css`, then one file per area
+in `src/styles/components/` (primitives, play-button, site-chrome, home, game-feature,
+library, game-page, about, interactions). Each file keeps its own responsive and
+reduced-motion rules next to the rules they adjust. Small one-off layout uses Tailwind
+utilities in the component.
+
+## Browsing interactions
+
+- Bookmark buttons let visitors keep a personal set of games on this device. The Saved filter has a clear empty state; blocked browser storage falls back to the current visit. The same saved state is used on cards, quick looks, and game pages.
+- Quick look opens a native modal with the cover, short pitch, confirmed details, save action, and either Play or Coming soon. It loads only after a visitor opens it. Full game pages remain the place for creator information and deeper details.
+- Screenshot previews respond to swipe gestures, previous/next buttons, numbered selectors, and arrow keys. Vertical scrolling and pinch zoom remain available. The previous image remains visible until the next image loads.
+- On fine pointers, a small light and tilt follow the pointer across a tile. Updates are limited to animation frames while the pointer moves; there is no idle animation loop. Keyboard focus keeps the existing static highlight. Reduced motion disables the effect.
+- Switching reduced motion on while browsing reveals pending sections immediately.
+
+## Section and navigation feedback
+
+The library eyebrow has a small lime marker that settles once when a same-page section link is activated. Status filters expose a visible result count and divider. Main navigation links gain a short underline on hover or keyboard focus. Repeat section clicks always return to the destination, including from search. Reduced motion makes scrolling instant and removes the arrival animation.

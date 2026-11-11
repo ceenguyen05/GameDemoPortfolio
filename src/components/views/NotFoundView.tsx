@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SiteLink as Link } from "@/components/ui/SiteLink";
 import type { CSSProperties } from "react";
 import { games } from "@/content/games";
 import { Button } from "@/components/ui/Button";
@@ -26,7 +26,7 @@ export function NotFoundView() {
             Back to the library <span aria-hidden="true">→</span>
           </Button>
           <Button href="/about" variant="text">
-            Contact Casey
+            About the collection
           </Button>
         </div>
       </div>
@@ -34,7 +34,10 @@ export function NotFoundView() {
         aria-labelledby="notfound-games"
         className="lg:col-span-4 lg:col-start-9 lg:self-end"
       >
-        <h2 id="notfound-games" className="label border-b border-ink pb-3">
+        <h2
+          id="notfound-games"
+          className="label border-b border-line-strong pb-3"
+        >
           In the library
         </h2>
         <ul>

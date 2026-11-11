@@ -14,8 +14,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:links": "node --import tsx scripts/check-links.ts",
+    "render:covers": "node scripts/render-covers.mjs",
     "test": "node --import tsx --test tests/*.test.ts",
-    "test:browser": "playwright test",
+    "test:browser": "playwright test --project=checks",
+    "screenshots": "playwright test --project=screenshots",
     "lighthouse": "lhci autorun"
   },
   "dependencies": {

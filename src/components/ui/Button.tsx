@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SiteLink as Link } from "@/components/ui/SiteLink";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type Variant = "outline" | "text";

@@ -1,118 +1,101 @@
-# Decisions and TODOs
+# Decisions and open items
 
-Judgment calls made where the spec was silent or later amended, followed by everything
-Casey still needs to confirm or replace. The full requirement-by-requirement review is
-in [HANDOFF_AUDIT.md](HANDOFF_AUDIT.md).
+Why the site is built the way it is, and what still needs content. The look and
+behavior are described in [DESIGN.md](DESIGN.md).
 
-## Changes from the original spec (per Casey)
+## Product decisions
 
-- **Neutral design instead of "tactical spec sheet."** The hub has to suit an FPS, an
-  obby, and a moon game at once, so the chrome is a warm, light catalog. Each game's
-  accent and art supply the color. The original "near-black base" became a paper base for
-  the same reason. See [DESIGN.md](DESIGN.md).
-- **Play opens a new tab.** Every Play now is still a real `<a href>`, now with
-  `target="_blank" rel="noopener noreferrer"`. The new-tab behavior appears in the
-  destination label and in the accessible name ("Play now: ACI: Series 1 (opens in a
-  new tab)").
-- **Three named upcoming games** replace the spec's two anonymous "classified" slots.
-  Casey confirmed they're three separate games: Devil Game, a 2–6 player obby, and Moon
-  Sweeper. All three show a "Working title" label (the `workingTitle` flag), and Moon
-  Sweeper's copy stays a minimal "In the works" by choice. "Roblox dupe" stays out of
-  public copy.
-- **ACI release and changelog.** Per Casey, the release date is the hub's launch date
-  (2026-11-09), with one 1.7.6 entry listing the game's features. The ACI-SND repo
-  tagged 1.7.6 on 2026-11-05; the hub uses Casey's date.
-- **No commits after `Version 1.0.5`.** Per Casey, earlier commits were renamed
-  `Version 1.0.0`–`1.0.5` without co-author lines, and later work is left uncommitted for
-  review.
+- **Brand:** Playroom. Dark, neutral, modern, and interactive, with no identity tied to
+  one game or developer.
+- **The hub never hosts a game.** Every Play now is a real link to the game's own site
+  and opens in a new tab. So do the Source, GitHub, and share links on a game page.
+- **Creators are credited per game.** Names, bios, and contact links appear only on the
+  pages of the games they made, never on the shared pages.
+- **Games:** ACI: Series 1 is live. Devil 2, Multi Player Obby, and Moon Sweeper are
+  browser-first and coming soon.
+- **ACI: Series 1** is listed at version 1.7.6 with the feature list from its
+  repository. Its screenshots are real captures of the live build; see
+  [ACI_CAPTURES.md](ACI_CAPTURES.md).
+- **Slugs stay** as `devil-game` and `untitled-obby` even though the titles changed, so
+  links already shared keep working.
+- **No accounts, analytics, or tracking.** Saved picks live in the visitor's browser.
 
-## Design and UX
+## Design and behavior
 
-- **Library as a numbered catalog, not a card grid.** Rows (number · art · copy ·
-  status/Play) fit any number of games with no orphaned grid cells, and status is
-  scannable at a glance.
-- **Hover/focus reveal: screenshot crossfade.** Chosen over a video loop (no trailers
-  exist) or tilt (gimmicky for a catalog). Games without screenshots simply don't fade.
-  Disabled under reduced motion.
-- **Filters only for statuses that exist.** With no "in development" games, there's no
-  empty "In development 0" button. Filtering flips a data attribute and CSS hides rows,
-  so rows stay server-rendered.
-- **Featured game:** the first live entry in `games.ts`.
-- **Upcoming game pages exist.** They show the hero, locked Play, and overview, and they
-  omit empty sections (no gallery, controls, or notes) instead of padding them with
-  "TBA." The locked Play is a disabled `<button>`, never a link.
-- **Hero title size steps down for names over 8 characters**, so longer titles never
-  break mid-word.
-- **Fact sheet shows the `/play/<slug>` share link** for live games, since those are the
-  URLs Casey shares.
-- **Type:** Manrope (variable) for display and text, IBM Plex Mono 400 for metadata.
-  Nothing renders under 12px. Arial body text from the draft was dropped.
-- **Square panels, 3px controls, one shadow (Play).** This avoids the uniform
-  rounded-card look.
-- **Sound:** synthesized Web Audio blips, off by default, with a distinct two-note sound
-  on Play. If storage is blocked, the toggle still works for the current page view.
-- **404:** one page for unknown paths and unknown `/play/` slugs. Static text covers
-  both cases (no client JS to detect the path), plus a list of every game.
+- **Cover deck:** a raised cover would hide the cover to its right, so that neighbor
+  stacks just beneath it. Moving across the fan in either direction reaches every cover
+  (covered by a browser test).
+- **Motion is one-shot or a response.** Entrances run once, sections reveal once on
+  scroll, and nothing loops. Reduced motion removes all of it, including when the
+  setting changes while the page is open.
+- **Scroll reveal is safe by default.** Sections are only hidden after the reveal script
+  runs, and only if they start below the fold, so nothing is hidden without JavaScript.
+- **Icons are SVG.** Unicode arrows and the asterisk are drawn as emoji on many phones.
+- **Text floor:** body and labels are at least 12px; only the decorative cover-deck
+  captions go to 10px.
+- **Filters** only list statuses that have games. Upcoming games keep a disabled Play
+  control and omit empty sections.
+- **Sharing:** "Copy game link" copies the game page URL and falls back to a selectable
+  field if the clipboard is blocked. Live games also have a `/play/<slug>` redirect.
+
+## Browsing features
+
+- **Saved picks:** bookmark a game and filter the library to saved ones. They are stored
+  in the browser only. If storage is blocked they last for the visit, and stale or
+  malformed saved data is ignored.
+- **Quick look:** a dialog with a game's cover, pitch, key details, save action, and Play
+  (or Coming soon), opened without leaving the library. It loads on demand and receives
+  only a small public preview of each game, not the full catalog or developer profiles.
+- **Previews:** the feature image supports touch swipes, arrow keys, and previous/next
+  controls, with a crossfade once the next image has loaded.
+- **Pointer lighting:** library tiles get a small light and tilt that follow a mouse.
+  Touch devices and reduced-motion visitors skip it.
+
+## Section navigation
+
+All internal links share `components/ui/SiteLink.tsx`. Next.js handles new routes; links within the current route explicitly scroll and focus their destination, even when the URL already ends in the same hash. Repeated clicks do not add duplicate history entries. Modifier clicks and new-tab links retain browser behavior. Links to the current page without a hash return to the top. The native skip link remains a plain anchor.
+
+The library is a programmatic focus target. A small lime marker settles once on arrival, and the visible result count updates with filters. Reduced motion skips the cue and uses instant scrolling. These interactions use no additional dependency or ongoing animation loop.
 
 ## Engineering
 
-- **Tailwind 4 with `tailwind.config.ts` via `@config`.** This keeps the spec's config
-  file. Tokens are CSS variables in `src/styles/tokens.css`, mapped to utilities.
-  Components use utilities, and the few compositions that need pseudo-elements live in
-  `globals.css` (Play button, keycap, stretched link, filters).
-- **TypeScript 6 and ESLint 9, not 7 and 10.** `typescript-eslint` (through
-  `eslint-config-next`) supports TypeScript below 6.1, and Next's React, a11y, and import
-  plugins stop at ESLint 9. Dependabot ignores those majors (and `@types/node` majors,
-  to match Node 22) so it doesn't open PRs that fail CI.
-- **`vercel.json` pins `"framework": "nextjs"`.** The Vercel project had been saved
-  with preset "Other," which served `public/` statically and returned NOT_FOUND for
-  every page.
-- **`npm install` locally, `npm ci` in CI.** CI runners start empty, and `npm ci` fails if
-  the lockfile drifts. On Windows, `npm ci` fails when a running dev server locks files
-  in `node_modules`. See [DEPLOYING.md](DEPLOYING.md#local-troubleshooting-windows).
-- **Validation beyond the spec:** non-https repo/trailer URLs, `playUrl` on a non-live
-  game, empty copy, malformed changelog entries, accents under 3:1 against ink, and
-  missing image files all fail the build.
-- **Performance:** library rows and the command list render on the server; only the
-  filter, palette, sound toggle, and gallery hydrate. Motion loads with the palette
-  only. The LCP hero is served at quality 60, below-the-fold game-page sections use
-  `content-visibility: auto`, and mono is one weight.
-- **Content imports in `games.ts` and `lib/` use one-level `../` paths**, because
-  `next.config.ts` and the Node scripts import the catalog outside Next's alias resolver.
-  Everything else uses `@/`.
-- **`robots.txt` disallows `/play/`** so crawlers index game pages rather than redirect
-  hops. The sitemap includes upcoming game pages at lower priority.
-- **Social images are typographic** (catalog style, game accent). Satori can't decode
-  WebP, and the cover art reads poorly at thumbnail size anyway.
-- **Tests beyond the spec:** `npm test` (catalog and redirect unit tests, run in CI)
-  and `npm run test:browser` (Playwright, local only since it needs Chrome). The
-  browser suite runs against its own production server on port 3100, so it never picks
-  up a dev server on 3000.
-- **Removed:** the unused `sharp` dev dependency, the draft's 1,546-line stylesheet,
-  and stale local artifacts (`.cache/`, a 1 GB npm cache; `.lighthouseci/`;
-  `test-results/`).
-- **No analytics, cookies, or tracking.**
+- **One source of truth.** Routes, metadata, social images, the sitemap, search entries,
+  and `/play/<slug>` redirects all come from `src/content/games.ts`. The catalog is
+  validated at build time, and a bad entry fails the build with a message naming it.
+- **Covers are WebP, never SVG.** On the home page, three SVG covers cost about 2 s of
+  blocked main-thread time under Lighthouse's phone throttling (performance 70–73; 97
+  with them removed). The vector sources live in `art/covers/` and
+  `npm run render:covers` renders them. The catalog rejects `.svg` image paths.
+- **The hero image on a game page is preloaded with high fetch priority.** The home
+  page's cover deck loads eagerly because it is in the first view on every screen.
+- **Stylesheets are split by area** under `src/styles/components/`.
+- **`src/lib/theme.ts`** holds the palette for code that can't read CSS variables. A unit
+  test compares it with `tokens.css`.
+- **Dialogs ignore a late `close` event.** Browsers fire `close` shortly after a dialog
+  closes; if the dialog was reopened in between, that event used to close it again.
+- **Browser tests run against their own production server** and never reuse one that is
+  already running, so they can't validate an old build by mistake. Set `TEST_PORT` if
+  port 3100 is taken.
+- **Screenshots for the README** are generated by `npm run screenshots`, separate from
+  the browser checks, so running tests never rewrites tracked files.
+- **TypeScript 6 and ESLint 9**, not 7 and 10: the lint tooling doesn't support the newer
+  majors yet. Dependabot ignores those majors.
+- **`vercel.json` pins the framework to Next.js**, so the Vercel project can't fall back
+  to serving `public/` as a plain static folder.
+- **`npm install` locally, `npm ci` in CI.** See
+  [DEPLOYING.md](DEPLOYING.md#local-troubleshooting-windows).
 
-## TODO(casey)
+## Open items
 
-Each item is also marked `TODO(casey)` in code, except item 5.
+Marked `TODO(casey)` in `src/content/` where they apply.
 
-1. **Final names for the upcoming games.** Devil Game, Untitled obby, and Moon Sweeper
-   show as working titles. When a name is settled, update `title` and remove
-   `workingTitle: true` in `src/content/games.ts`. If you change the obby's `slug`,
-   rename `public/games/untitled-obby/` to match.
-2. **Devil Game genre:** add it once settled (`genre: []` for now).
-3. **ACI screenshots:** `screenshot-01/02/03.webp` come from test sessions and show
-   debug health values (+999,999,967 and similar). Replace them with clean captures
-   (1280×720 WebP, same filenames). The cover is clean. Casey chose to keep them up
-   until then.
-4. **Placeholder art** to replace with real covers when available (1280×720 WebP as
-   `cover.webp`, then update `coverImage` in `games.ts`):
-   - `public/games/devil-game/cover.svg`
-   - `public/games/untitled-obby/cover.svg`
-   - `public/games/moon-sweeper/cover.svg`
-5. **Push and Vercel (not a code TODO):** push the rewritten history, redeploy, and
-   confirm the Framework Preset reads Next.js (see [DEPLOYING.md](DEPLOYING.md)).
-
-Not placeholders: the contact email (`ceen2327@gmail.com`), the production URL, and
-`docs/screenshot.png` (captured from the production build).
+1. **Concept covers:** Devil 2, Multi Player Obby, and Moon Sweeper use concept art
+   rendered from `art/covers/`. Replace each `cover.webp` with a real capture when the
+   game has one, then delete its SVG source.
+2. **Devil 2 genre:** empty until it's settled.
+3. **Trea's links and bio** (`src/content/developers.ts`): add them if he wants more than
+   a name and project credit.
+4. **Which game Devil 2 remakes:** the copy stays general until that's confirmed. See
+   [CONTENT_SOURCES.md](CONTENT_SOURCES.md).
+5. **Upcoming games:** add controls, screenshots, play URLs, versions, and dates as
+   builds become ready.
