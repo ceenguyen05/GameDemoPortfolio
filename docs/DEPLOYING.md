@@ -6,7 +6,19 @@ preview URL. No GitHub workflow deploys anything; CI only checks.
 
 ## Before pushing
 
-Run lint, typecheck, format:check, unit tests, build, test:browser, and check:links (commands in the README). The browser suite starts an isolated production server; set TEST_PORT if 3100 is occupied. CI installs Chromium; local checks use Google Chrome.
+Run the checks before pushing:
+
+```sh
+npm run lint
+npm run typecheck
+npm run format:check
+npm test
+npm run build
+npm run test:browser
+npm run check:links
+```
+
+The browser suite starts an isolated production server; set TEST_PORT if 3100 is occupied. CI installs Chromium; local checks use Google Chrome.
 
 GitHub CI and Vercel's Git deploy start independently on a push. A failing CI job does not automatically prevent Vercel from publishing the same commit. Use a preview branch and required checks before merging when you need that gate. No push or deployment is performed by the local checks.
 
