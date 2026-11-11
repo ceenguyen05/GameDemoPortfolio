@@ -143,7 +143,7 @@ export const games: Game[] = validateGames([
     ],
   },
 
-  // Names, browser platform, creators and coming-soon status confirmed 2026-11-10.
+  // Names, browser platform and creators confirmed 2026-11-10.
   // TODO(casey): each cover.webp below is concept art rendered from
   // art/covers/<slug>.svg (npm run render:covers). Replace it with a real
   // 1280×720 capture when the game has one, and delete the SVG source.
@@ -154,20 +154,22 @@ export const games: Game[] = validateGames([
     tagline: "A new take. A new tab.",
     description: {
       short:
-        "A browser-first remake in the works. A familiar idea, a fresh build, and a first playable demo still to come.",
-      long: "Devil 2 is a browser-first remake project by Trea Edwards. Work is underway; the first playable build will bring controls, screenshots, and more details.",
+        "A browser-first remake with a playable demo. Open it in a new tab and jump in.",
+      long: "Devil 2 is a browser-first remake project by Trea Edwards. The playable demo is available now; launch it in a new tab to try the current build.",
     },
-    status: "coming-soon",
+    status: "live",
     genre: [], // TODO(casey): add the genre once it's settled.
     platforms: ["Web browser"],
     controls: [],
     techStack: [],
+    // Launch URL supplied by Trea on 2026-11-11.
+    playUrl: "https://test-lemon-pi-19.vercel.app/",
     releaseDate: null,
     accentColor: "#e5484d",
     coverImage: {
       src: "/games/devil-game/cover.webp",
       alt: "Concept illustration for Devil 2: a glowing red portal between angular dark cliffs",
-      caption: "Concept artwork / Gameplay not yet revealed",
+      caption: "Concept artwork",
       width: 1280,
       height: 720,
     },

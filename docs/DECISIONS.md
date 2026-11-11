@@ -11,8 +11,8 @@ behavior are described in [DESIGN.md](DESIGN.md).
   and opens in a new tab. So do the Source, GitHub, and share links on a game page.
 - **Creators are credited per game.** Names, bios, and contact links appear only on the
   pages of the games they made, never on the shared pages.
-- **Games:** ACI: Series 1 is live. Devil 2, Multi Player Obby, and Moon Sweeper are
-  browser-first and coming soon.
+- **Games:** ACI: Series 1 and the Devil 2 demo are live. Multi Player Obby and
+  Moon Sweeper are browser-first and coming soon.
 - **ACI: Series 1** is listed at version 1.7.6 with the feature list from its
   repository. Its screenshots are real captures of the live build; see
   [ACI_CAPTURES.md](ACI_CAPTURES.md).

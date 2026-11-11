@@ -109,7 +109,7 @@ In the running build, check:
 
 ## Retiring a placeholder
 
-The upcoming entries (`devil-game`, `untitled-obby`, `moon-sweeper`) are ordinary
+The upcoming entries (`untitled-obby`, `moon-sweeper`) are ordinary
 data. When one ships, update it in place: set `status: "live"`, add `playUrl` and
 real art, and delete its `art/covers/<slug>.svg` source. If you rename its slug, rename the asset
 folder to match.

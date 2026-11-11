@@ -25,7 +25,7 @@ design, built for discovering games and sharing them with friends.
 | **ACI: Series 1**     | Tactical FPS with Search & Destroy and Zombies | Play now    |
 | **Multi Player Obby** | Cooperative obstacle course                    | Coming soon |
 | **Moon Sweeper**      | Lunar cleanup adventure                        | Coming soon |
-| **Devil 2**           | Browser remake in development                  | Coming soon |
+| **Devil 2**           | Playable browser remake demo                   | Play now    |
 
 ## Tech stack
 

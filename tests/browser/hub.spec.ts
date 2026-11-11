@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { open, trackConsole } from "./helpers";
 
 const ACI = "https://aci-series1.vercel.app/";
+const DEVIL = "https://test-lemon-pi-19.vercel.app/";
 const PAGES = [
   "/",
   "/about",
@@ -27,23 +28,35 @@ test("Play links are real anchors to the live game in a new tab", async ({
   }
   await expect(page.getByText("aci-series1.vercel.app").first()).toBeVisible();
   // Upcoming games are locked, never links, and use the confirmed display names.
-  for (const title of ["Devil 2", "Multi Player Obby", "Moon Sweeper"]) {
+  for (const title of ["Multi Player Obby", "Moon Sweeper"]) {
     const row = page.locator("li[data-status]", { hasText: title });
     await expect(
       row.getByRole("button", { name: "Coming soon" }),
     ).toBeDisabled();
     await expect(row.getByRole("link", { name: /^Play/ })).toHaveCount(0);
   }
+  const devil = page.getByRole("link", { name: /^Play now: Devil 2/ });
+  await expect(devil).toHaveCount(1);
+  await expect(devil).toHaveAttribute("href", DEVIL);
+  await expect(devil).toHaveAttribute("target", "_blank");
+  await expect(devil).toHaveAttribute("rel", /noopener/);
+  await open(page, "/games/devil-game");
+  await expect(devil).toHaveCount(2); // game hero + launch band
+  for (const link of await devil.all()) {
+    await expect(link).toHaveAttribute("href", DEVIL);
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", /noopener/);
+  }
 });
 
 test("library filters show only matching rows", async ({ page }) => {
   await open(page, "/");
   const rows = page.locator("li[data-status]");
-  await page.getByRole("button", { name: "Coming soon 3" }).click();
-  await expect(rows.filter({ visible: true })).toHaveCount(3);
-  await page.getByRole("button", { name: "Live 1" }).click();
-  await expect(rows.filter({ visible: true })).toHaveCount(1);
-  await expect(page.getByRole("status")).toHaveText("Showing 1 game");
+  await page.getByRole("button", { name: "Coming soon 2" }).click();
+  await expect(rows.filter({ visible: true })).toHaveCount(2);
+  await page.getByRole("button", { name: "Live 2" }).click();
+  await expect(rows.filter({ visible: true })).toHaveCount(2);
+  await expect(page.getByRole("status")).toHaveText("Showing 2 games");
   await page.getByRole("button", { name: "All 4" }).click();
   await expect(rows.filter({ visible: true })).toHaveCount(4);
   await expect(
@@ -72,6 +85,10 @@ test("keyboard: skip link, palette open/search/navigate/close", async ({
   const launch = dialog.getByRole("link", { name: /Play ACI: Series 1/ });
   await expect(launch).toHaveAttribute("href", ACI);
   await expect(launch).toHaveAttribute("target", "_blank");
+  await search.fill("play devil");
+  const devil = dialog.getByRole("link", { name: /Play Devil 2/ });
+  await expect(devil).toHaveAttribute("href", DEVIL);
+  await expect(devil).toHaveAttribute("target", "_blank");
   await search.fill("zzz");
   await expect(dialog.getByText("No matches.")).toBeVisible();
   await page.keyboard.press("Escape");
@@ -169,7 +186,14 @@ test("redirects, 404s, metadata and static resources", async ({
   const redirect = await request.get("/play/aci-series-1", { maxRedirects: 0 });
   expect(redirect.status()).toBe(307);
   expect(redirect.headers().location).toBe(ACI);
-  for (const path of ["/play/unknown-slug", "/play/devil-game", "/games/nope"])
+  const devil = await request.get("/play/devil-game", { maxRedirects: 0 });
+  expect(devil.status()).toBe(307);
+  expect(devil.headers().location).toBe(DEVIL);
+  for (const path of [
+    "/play/unknown-slug",
+    "/play/untitled-obby",
+    "/games/nope",
+  ])
     expect((await request.get(path, { maxRedirects: 0 })).status(), path).toBe(
       404,
     );
@@ -536,7 +560,22 @@ test("quick look is keyboard accessible and keeps live launches separate from up
   await page
     .getByRole("button", { name: "Quick look: Devil 2", exact: true })
     .click();
-  const upcoming = page.getByRole("dialog", { name: "Devil 2", exact: true });
+  const devil = page.getByRole("dialog", { name: "Devil 2", exact: true });
+  const devilPlay = devil.getByRole("link", { name: /^Play now/ });
+  await expect(devilPlay).toHaveAttribute("href", DEVIL);
+  await expect(devilPlay).toHaveAttribute("target", "_blank");
+  await expect(devilPlay).toHaveAttribute("rel", /noopener/);
+  await devil.getByRole("link", { name: "Explore the game" }).click();
+  await expect(page).toHaveURL(/games\/devil-game$/);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await open(page, "/");
+  await page
+    .getByRole("button", { name: "Quick look: Moon Sweeper", exact: true })
+    .click();
+  const upcoming = page.getByRole("dialog", {
+    name: "Moon Sweeper",
+    exact: true,
+  });
   await expect(
     upcoming.getByRole("button", { name: "Coming soon", exact: true }),
   ).toBeDisabled();
@@ -544,7 +583,7 @@ test("quick look is keyboard accessible and keeps live launches separate from up
     0,
   );
   await upcoming.getByRole("link", { name: "Explore the game" }).click();
-  await expect(page).toHaveURL(/games\/devil-game$/);
+  await expect(page).toHaveURL(/games\/moon-sweeper$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect(problems).toEqual([]);
 });

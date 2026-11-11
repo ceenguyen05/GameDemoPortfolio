@@ -97,6 +97,11 @@ test("redirects only live games and never makes a permanent redirect", () => {
       destination: "https://aci-series1.vercel.app/",
       permanent: false,
     },
+    {
+      source: "/play/devil-game",
+      destination: "https://test-lemon-pi-19.vercel.app/",
+      permanent: false,
+    },
   ]);
 });
 
