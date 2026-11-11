@@ -2,26 +2,55 @@
 
 **Small games. Good company.**
 
-A shared collection of browser games made by friends. Explore each game's screenshots,
-get a feel for how it plays, and open the game in a new tab. Find something you like
-and pass it on.
-
 **[Explore Playroom](https://gamedemoportfolio.vercel.app/)**
 
 ![Playroom's homepage](docs/screenshot.png)
 
+## Overview
+
+Playroom is a growing demo portfolio for browser-first games made by friends.
+It gives each project a place to show what it is, who made it, and how to play.
+
+Browse the collection, preview screenshots, save games for later, and explore
+individual game pages for controls and release notes. When something catches your
+eye, **Play now** opens the game on its own website in a new tab.
+
+The collection brings different genres and creators together under one welcoming
+design, built for discovering games and sharing them with friends.
+
 ## The collection
 
-| Game                                                                 | Status      |
-| -------------------------------------------------------------------- | ----------- |
-| **ACI: Series 1** — a tactical FPS with Search & Destroy and Zombies | Play now    |
-| **Multi Player Obby** — a cooperative obstacle course                | Coming soon |
-| **Moon Sweeper** — a lunar cleanup adventure                         | Coming soon |
-| **Devil 2** — a browser remake in the works                          | Coming soon |
+| Game                  | About                                          | Status      |
+| --------------------- | ---------------------------------------------- | ----------- |
+| **ACI: Series 1**     | Tactical FPS with Search & Destroy and Zombies | Play now    |
+| **Multi Player Obby** | Cooperative obstacle course                    | Coming soon |
+| **Moon Sweeper**      | Lunar cleanup adventure                        | Coming soon |
+| **Devil 2**           | Browser remake in development                  | Coming soon |
 
-Playroom brings the collection together with game previews, quick looks, saved picks,
-and a searchable library. Each game has its own page, creator credits, and details.
+## Tech stack
 
-Built with **Next.js, TypeScript, and Tailwind CSS**. Hosted on **Vercel**.
+- **Next.js, React, and TypeScript** for the website.
+- **Tailwind CSS and Motion** for styling and animation.
+- **Playwright, ESLint, and Prettier** for browser checks and code quality.
+- **Vercel** for hosting, with **GitHub Actions** for automated checks.
 
-[Design notes](docs/DESIGN.md) · [Development & deployment](docs/DEPLOYING.md)
+The games are separate projects with their own builds and technology.
+
+## Credits
+
+- **[Casey Nguyen](https://github.com/ceenguyen05)** — creator of Playroom,
+  ACI: Series 1, Multi Player Obby, and Moon Sweeper.
+- **Trea Edwards** — creator of the Devil 2 browser project.
+
+Each game's page includes its creator's credits and available links.
+
+## What's next
+
+Playroom will grow as more games and demos become ready to share. Upcoming projects
+will gain gameplay previews, controls, and launch links as development progresses.
+The goal is to keep the collection easy to explore while giving every new game
+room to stand out.
+
+---
+
+[Development & deployment](docs/DEPLOYING.md) · [Adding a game](docs/ADDING_A_GAME.md)
