@@ -15,8 +15,17 @@ Browse the collection, preview screenshots, save games for later, and explore
 individual game pages for controls and release notes. When something catches your
 eye, **Play now** opens the game on its own website in a new tab.
 
+Gameplay previews cycle every five seconds on the featured game and its detail
+page. Hover to pause, use the Play/Pause control, or swipe and choose a frame.
+Reduced-motion settings keep previews manual.
+
 The collection brings different genres and creators together under one welcoming
 design, built for discovering games and sharing them with friends.
+
+**[Meet the makers](https://gamedemoportfolio.vercel.app/makers)** to explore
+Casey Nguyen's software engineering and AI background, Trea Edwards' electrical
+engineering and game-development interests, and the games each is creating.
+Jump to a maker, expand their background, or follow a game back to the collection.
 
 ## The collection
 
@@ -38,11 +47,15 @@ The games are separate projects with their own builds and technology.
 
 ## Credits
 
-- **[Casey Nguyen](https://github.com/ceenguyen05)** — creator of Playroom,
+- Casey Nguyen — creator of Playroom,
   ACI: Series 1, Multi Player Obby, and Moon Sweeper.
+  [GitHub](https://github.com/ceenguyen05) ·
+  [LinkedIn](https://www.linkedin.com/in/caseynguyen2327)
 - **Trea Edwards** — creator of the Devil 2 browser project.
 
 Each game's page includes its creator's credits and available links.
+The makers page brings those profiles together, with GitHub, LinkedIn, and email
+links where supplied.
 
 ## What's next
 
@@ -53,4 +66,4 @@ room to stand out.
 
 ---
 
-[Development & deployment](docs/DEPLOYING.md) · [Adding a game](docs/ADDING_A_GAME.md)
+[Development & deployment](docs/DEPLOYING.md) · [Adding a game](docs/ADDING_A_GAME.md) · [Maintaining maker profiles](docs/MAKERS.md)

@@ -9,7 +9,7 @@ import { validateGames } from "../lib/validateGames";
  * See docs/ADDING_A_GAME.md.
  */
 export const games: Game[] = validateGames([
-  // Verified against github.com/ceenguyen05/ACI-SND at 3ec4a9e ("Version 1.7.6"):
+  // Verified against github.com/ceenguyen05/ACI-Series1 at 3ec4a9e ("Version 1.7.6"):
   // README, src/config/controls.ts (DEFAULT_BINDINGS), src/config/gadgets.ts.
   {
     slug: "aci-series-1",
@@ -62,7 +62,7 @@ export const games: Game[] = validateGames([
       "MySQL",
     ],
     playUrl: "https://aci-series1.vercel.app/",
-    repoUrl: "https://github.com/ceenguyen05/ACI-SND",
+    repoUrl: "https://github.com/ceenguyen05/ACI-Series1",
     releaseDate: "2026-11-09", // Confirmed by Casey: first hub release is today.
     accentColor: "#ff743d",
     // Live v1.7.6 captures, November 10, 2026. See docs/ACI_CAPTURES.md.
@@ -118,10 +118,10 @@ export const games: Game[] = validateGames([
       },
     ],
     // Confirmed by Casey: one entry for the current version, dated the hub
-    // release, listing the game's features (from the ACI-SND README).
+    // release, listing the game's features (from the ACI-Series1 README).
     changelog: [
       {
-        version: "1.7.6",
+        version: "1.8.0",
         date: "2026-11-09",
         notes: [
           "Search & Destroy: competitive bomb defusal with buy phases, a round economy, halftime side swaps, and offline bot matches from 1v1 to 5v5.",

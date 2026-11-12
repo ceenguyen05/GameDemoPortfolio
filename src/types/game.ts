@@ -27,7 +27,7 @@ export type ChangelogEntry = {
 
 type GameBase = {
   slug: string;
-  /** Who made it; shown on the game's page only. See src/content/developers.ts. */
+  /** Shared maker identity used by game credits and the /makers directory. */
   developer: Developer;
   title: string;
   tagline: string;

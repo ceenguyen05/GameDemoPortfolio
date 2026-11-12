@@ -11,3 +11,11 @@ All three use Coming soon, Web browser, and no launch URL, release date, control
 ## ACI gameplay captures
 
 Six real production v1.7.6 captures replace the debug-health screenshots. Source, capture method, and scene list: [ACI_CAPTURES.md](ACI_CAPTURES.md).
+
+## Maker backgrounds
+
+The `/makers` profiles use Casey's supplied resume, the Playroom repository, and his
+November 11, 2026 description of Trea as an electrical engineer inspired by game
+development and AI. Public identity, background, and attribution rules are documented
+in [MAKERS.md](MAKERS.md). ACI's displayed version is 1.8.0 per Casey; existing captures
+and their provenance remain v1.7.6.

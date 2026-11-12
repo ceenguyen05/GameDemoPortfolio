@@ -126,7 +126,8 @@ test("rejects cross-project asset paths", () => {
 
 test("creator names and links are validated per game", () => {
   assert.throws(
-    () => validateGames([{ ...live, developer: { name: "" } }]),
+    () =>
+      validateGames([{ ...live, developer: { ...live.developer, name: "" } }]),
     /developer.name/,
   );
   assert.throws(
@@ -134,7 +135,7 @@ test("creator names and links are validated per game", () => {
       validateGames([
         {
           ...live,
-          developer: { name: "Maker", githubUrl: "javascript:alert(1)" },
+          developer: { ...live.developer, githubUrl: "javascript:alert(1)" },
         },
       ]),
     /developer.githubUrl/,
@@ -142,7 +143,7 @@ test("creator names and links are validated per game", () => {
   assert.throws(
     () =>
       validateGames([
-        { ...live, developer: { name: "Maker", email: "invalid" } },
+        { ...live, developer: { ...live.developer, email: "invalid" } },
       ]),
     /developer.email/,
   );

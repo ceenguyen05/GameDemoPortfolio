@@ -1,15 +1,32 @@
 "use client";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { GameImage } from "@/types/game";
 import { catalogNumber } from "@/lib/format";
 
 const SIZES = "(min-width: 1440px) 800px, (min-width: 1024px) 55vw, 100vw";
+const PREVIEW_INTERVAL = 5_000;
+const motionQuery = "(prefers-reduced-motion: reduce)";
+const subscribeMotion = (notify: () => void) => {
+  const media = window.matchMedia(motionQuery);
+  media.addEventListener("change", notify);
+  return () => media.removeEventListener("change", notify);
+};
+const subscribeVisibility = (notify: () => void) => {
+  document.addEventListener("visibilitychange", notify);
+  return () => document.removeEventListener("visibilitychange", notify);
+};
+const getReducedMotion = () => window.matchMedia(motionQuery).matches;
+const getVisible = () => document.visibilityState === "visible";
+// Start static on the server and before hydration (also the no-JS experience).
+const serverReducedMotion = () => true;
+const serverVisible = () => false;
 
 /**
  * The large image in a game's feature panel, with numbered buttons to switch
- * between the cover and screenshots. ← → move between buttons. The chosen
- * image fades in over the previous one.
+ * between the cover and screenshots. Auto-advances every five seconds after an
+ * image loads. Hover, keyboard focus, explicit pause, reduced motion, and hidden
+ * tabs stop the timer. Offscreen previews keep cycling while the visitor scrolls.
  */
 export function HeroPreview({
   images,
@@ -23,9 +40,53 @@ export function HeroPreview({
   const lastLoaded = useRef(0);
   const swipe = useRef<{ x: number; y: number; id: number } | null>(null);
   const [previous, setPrevious] = useState<number | null>(null);
+  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [keyboardFocused, setKeyboardFocused] = useState(false);
+  const [touching, setTouching] = useState(false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeMotion,
+    getReducedMotion,
+    serverReducedMotion,
+  );
+  const visible = useSyncExternalStore(
+    subscribeVisibility,
+    getVisible,
+    serverVisible,
+  );
   const active = images[selected];
   const below = previous === null ? null : images[previous];
   const isFirstPaint = priority && selected === 0 && previous === null;
+
+  useEffect(() => {
+    if (
+      images.length < 2 ||
+      reducedMotion ||
+      !visible ||
+      paused ||
+      hovered ||
+      keyboardFocused ||
+      touching ||
+      ready !== active.src
+    )
+      return;
+    const timer = window.setTimeout(() => {
+      setPrevious(lastLoaded.current);
+      setSelected((index) => (index + 1) % images.length);
+    }, PREVIEW_INTERVAL);
+    return () => window.clearTimeout(timer);
+  }, [
+    images.length,
+    reducedMotion,
+    visible,
+    paused,
+    hovered,
+    keyboardFocused,
+    touching,
+    ready,
+    active.src,
+    selected,
+  ]);
 
   const choose = (next: number) => {
     if (next === selected) return;
@@ -34,7 +95,24 @@ export function HeroPreview({
   };
 
   return (
-    <figure className="hero-preview">
+    <figure
+      className="hero-preview"
+      aria-label="Game previews"
+      onPointerEnter={(event) => {
+        if (event.pointerType !== "touch") setHovered(true);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType !== "touch") setHovered(false);
+      }}
+      onPointerDownCapture={() => setKeyboardFocused(false)}
+      onFocusCapture={(event) => {
+        if (event.target.matches(":focus-visible")) setKeyboardFocused(true);
+      }}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget))
+          setKeyboardFocused(false);
+      }}
+    >
       <div
         className="preview-image"
         aria-busy={below !== null && ready !== active.src}
@@ -51,11 +129,13 @@ export function HeroPreview({
             y: event.clientY,
             id: event.pointerId,
           };
+          setTouching(true);
           event.currentTarget.setPointerCapture(event.pointerId);
         }}
         onPointerUp={(event) => {
           const start = swipe.current;
           swipe.current = null;
+          setTouching(false);
           if (!start || start.id !== event.pointerId) return;
           const dx = event.clientX - start.x,
             dy = event.clientY - start.y;
@@ -66,6 +146,7 @@ export function HeroPreview({
         }}
         onPointerCancel={() => {
           swipe.current = null;
+          setTouching(false);
         }}
       >
         {below && (
@@ -85,6 +166,7 @@ export function HeroPreview({
           alt={active.alt}
           fill
           preload={isFirstPaint}
+          loading={previous !== null ? "eager" : undefined}
           fetchPriority={isFirstPaint ? "high" : "auto"}
           quality={60}
           sizes={SIZES}
@@ -94,6 +176,34 @@ export function HeroPreview({
           }}
           className={`preview-current object-cover ${below ? (ready === active.src ? "preview-enter" : "preview-loading") : ""}`}
         />
+        {images.length > 1 && (
+          <button
+            type="button"
+            className="preview-playback"
+            aria-label={
+              reducedMotion
+                ? "Slideshow is manual with reduced motion enabled"
+                : paused
+                  ? "Play slideshow"
+                  : "Pause slideshow"
+            }
+            aria-disabled={reducedMotion || undefined}
+            onClick={() => {
+              if (reducedMotion) return;
+              setPaused(!paused);
+              if (paused) setKeyboardFocused(false);
+            }}
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              {paused && !reducedMotion ? (
+                <path d="m5 3 7 5-7 5Z" />
+              ) : (
+                <path d="M4 3h3v10H4zm5 0h3v10H9z" />
+              )}
+            </svg>
+            {reducedMotion ? "Manual" : paused ? "Play" : "Pause"}
+          </button>
+        )}
         {images.length > 1 && (
           <div className="preview-navigation">
             <button
@@ -130,7 +240,13 @@ export function HeroPreview({
         </div>
       )}
       <div className="preview-bar">
-        <figcaption aria-live="polite">{active.caption}</figcaption>
+        <figcaption
+          aria-live={
+            paused || reducedMotion || keyboardFocused ? "polite" : "off"
+          }
+        >
+          {active.caption}
+        </figcaption>
         {images.length > 1 && (
           <div
             className="preview-options"

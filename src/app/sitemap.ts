@@ -5,6 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: siteConfig.url, priority: 1 },
     { url: `${siteConfig.url}/about`, priority: 0.5 },
+    { url: `${siteConfig.url}/makers`, priority: 0.7 },
     ...games.map((game) => ({
       url: `${siteConfig.url}/games/${game.slug}`,
       priority: game.status === "live" ? 0.9 : 0.4,

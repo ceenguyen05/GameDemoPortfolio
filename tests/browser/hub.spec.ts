@@ -5,6 +5,7 @@ const ACI = "https://aci-series1.vercel.app/";
 const PAGES = [
   "/",
   "/about",
+  "/makers",
   "/games/aci-series-1",
   "/games/devil-game",
   "/games/untitled-obby",
@@ -146,18 +147,21 @@ test("sound toggle persists, and still works with storage blocked", async ({
   await blocked.close();
 });
 
-test("every page fits 360px with reduced motion and logs nothing", async ({
+test("every page fits narrow phones and tablets with reduced motion and logs nothing", async ({
   page,
 }) => {
   const problems = trackConsole(page);
-  await page.setViewportSize({ width: 360, height: 780 });
+  test.setTimeout(60_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const path of PAGES) {
-    await open(page, path);
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - window.innerWidth,
-    );
-    expect(overflow, path).toBeLessThanOrEqual(0);
+  for (const width of [320, 390, 768]) {
+    await page.setViewportSize({ width, height: 780 });
+    for (const path of PAGES) {
+      await open(page, path);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      expect(overflow, `${path} at ${width}px`).toBeLessThanOrEqual(0);
+    }
   }
   expect(problems).toEqual([]);
 });
@@ -372,11 +376,11 @@ test("source and share links on a game page open in a new tab", async ({
 }) => {
   await open(page, "/games/aci-series-1");
   const source = page.getByRole("link", {
-    name: /github\.com\/ceenguyen05\/ACI-SND/,
+    name: /github\.com\/ceenguyen05\/ACI-Series1/,
   });
   await expect(source).toHaveAttribute(
     "href",
-    "https://github.com/ceenguyen05/ACI-SND",
+    "https://github.com/ceenguyen05/ACI-Series1",
   );
   await expect(source).toHaveAttribute("target", "_blank");
   await expect(source).toHaveAttribute("rel", /noopener/);

@@ -45,7 +45,9 @@ export function validateGames(entries: Game[]): Game[] {
     slugs.add(game.slug);
 
     if (!game.developer?.name?.trim()) fail("developer.name is required");
-    for (const field of ["githubUrl", "websiteUrl"] as const) {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(game.developer.slug ?? ""))
+      fail("developer.slug must be lowercase words separated by hyphens");
+    for (const field of ["githubUrl", "linkedinUrl", "websiteUrl"] as const) {
       const value = game.developer[field];
       if (value !== undefined && !isHttpsUrl(value))
         fail(`developer.${field} must be an https:// URL`);

@@ -1,19 +1,19 @@
 # Design
 
-Updated November 10, 2026. This describes the site as built.
+Updated November 12, 2026. This describes the site as built.
 
 ## Identity
 
 **Playroom** is a dark, welcoming home for a growing set of browser games, made to be
 shared with friends. The hub has its own identity and belongs to no single game or
-developer. Each game brings its own artwork and accent color. Names, bios, emails, and
-GitHub links appear only on the page of the game they belong to.
+developer. Each game brings its own artwork and accent color. Names, bios, and public
+links appear on each maker's game pages and on the dedicated makers directory.
 
 References: an independent arcade's colorful cabinets, a record shop's browsable
 covers, and a contemporary editorial portfolio's typography.
 
 Not used anywhere: military stamps, classified dossiers, neon glows, glass panels,
-gradient lettering, or decorations that move forever.
+gradient lettering, or decorative animation loops.
 
 ## Palette
 
@@ -56,6 +56,12 @@ to 10px, and each of those covers also carries a full accessible name.
   the overview, gallery, maker card, share row, controls, and release notes, and a
   closing launch banner. Sections with no data are omitted.
 - **About:** what the collection is, two notes, and a directory of every game.
+- **Makers:** a large editorial introduction, monogram jump cards, maker identities,
+  expandable engineering/experience/education sections, and automatically attributed
+  game cards. The desktop identity column stays beside its story; phones use a single
+  column. No stock portraits or invented background information.
+- **Header:** The games, The idea, and The makers stay visible at every breakpoint.
+  On phones, navigation occupies a second row below the wordmark and search.
 - Corners: 13–16px on cards and banners, 8px on buttons and chips, 3px on the Play
   button and keycaps (they read as physical keys).
 
@@ -79,7 +85,12 @@ live get a dashed, disabled control with their status instead.
 
 ## Motion
 
-Every animation is a response or a one-time entrance. Nothing loops.
+Decorative animations are responses or one-time entrances. The homepage spotlight
+and game-page hero share a six-image carousel that advances every five seconds
+after the next image loads, wrapping to the first image. Hover, keyboard focus,
+touch gestures, hidden tabs, and the explicit Pause control stop its timer. It
+continues while scrolling elsewhere in a visible tab and restarts with a full
+interval after a temporary pause. Reduced motion disables autoplay entirely.
 
 | Moment               | What happens                                                            | Timing            |
 | -------------------- | ----------------------------------------------------------------------- | ----------------- |
@@ -94,7 +105,7 @@ Every animation is a response or a one-time entrance. Nothing loops.
 | Opening search       | The panel fades and drops 4px (Motion, loaded on demand)                | 0.12s             |
 
 With `prefers-reduced-motion: reduce`, entrances, reveals, crossfades, and lifts are
-all removed; nothing is hidden waiting for an animation. The scroll reveal only hides
+all removed, and previews use manual controls; nothing is hidden waiting for an animation. The scroll reveal only hides
 sections after its script runs, so the page is complete without JavaScript.
 
 ## Interaction and accessibility
@@ -105,13 +116,14 @@ sections after its script runs, so the page is complete without JavaScript.
   to the thumbnail.
 - Accessible names start with the visible text. Links that open a new tab say so.
 - UI sounds are optional and off by default.
-- Everything is checked at 360px wide with no horizontal scroll.
+- Every page is checked at 320px, 390px, and 768px with no horizontal scroll;
+  maker profiles also have a 1440px desktop layout check.
 
 ## Where the styles live
 
 `src/styles/globals.css` only imports: `tokens.css`, `base.css`, then one file per area
 in `src/styles/components/` (primitives, play-button, site-chrome, home, game-feature,
-library, game-page, about, interactions). Each file keeps its own responsive and
+library, game-page, about, makers, interactions). Each file keeps its own responsive and
 reduced-motion rules next to the rules they adjust. Small one-off layout uses Tailwind
 utilities in the component.
 

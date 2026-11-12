@@ -90,7 +90,9 @@ export function GameFacts({ game }: { game: Game }) {
           className="grid grid-cols-[7rem_1fr] gap-4 border-b border-line py-3"
         >
           <dt className="label pt-0.5 text-muted">{row.term}</dt>
-          <dd className="min-w-0 text-sm font-semibold">{row.value}</dd>
+          <dd className="min-w-0 text-sm font-semibold [overflow-wrap:anywhere]">
+            {row.value}
+          </dd>
         </div>
       ))}
     </dl>

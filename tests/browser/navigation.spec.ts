@@ -51,6 +51,7 @@ for (const motion of ["no-preference", "reduce"] as const) {
 
 for (const path of [
   "/about",
+  "/makers",
   "/games/aci-series-1",
   "/games/devil-game",
   "/games/untitled-obby",

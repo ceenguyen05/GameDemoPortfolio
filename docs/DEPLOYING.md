@@ -24,7 +24,8 @@ GitHub CI and Vercel's Git deploy start independently on a push. A failing CI jo
 
 After deployment, verify the ACI title-screen cover in the homepage deck, spotlight, library, and game page; six gallery captures; and Play now opening the live game in a new tab. Vercel/Next.js generates image variants from the committed WebP assets.
 
-Reference: [Vercel Git deployments](https://vercel.com/docs/deployments/git).
+References: [Vercel Git deployments](https://vercel.com/docs/deployments/git) and
+[project architecture decisions](DECISIONS.md).
 
 ## If the site shows Vercel's `NOT_FOUND` page
 
@@ -62,7 +63,7 @@ Then **Deployments → ⋯ → Redeploy** the latest commit. The build log shoul
 2. Framework: **Next.js**. It's auto-detected, and `vercel.json` pins it either way.
    Leave root, build, output, and install at their defaults.
 3. **Settings → Git → Production Branch:** `main`.
-4. Deploy, then check `/`, `/games/aci-series-1`, and `/play/aci-series-1`.
+4. Deploy, then check `/`, `/makers`, `/games/aci-series-1`, and `/play/aci-series-1`.
 
 No environment variables are required. For a custom domain, add it under
 **Settings → Domains**, then set `NEXT_PUBLIC_SITE_URL=https://your-domain` so
@@ -105,7 +106,7 @@ After CI has run once on GitHub:
 
 - **`ci.yml`** (push to `main`, PRs): `npm ci`, lint, typecheck, format check, unit
   tests, build, Chromium installation, and browser interaction checks. The live external-game browser scenario is excluded from the required job; the separate live-link check warns without failing.
-- **`lighthouse.yml`** (PRs): builds, starts the site, audits `/` and
+- **`lighthouse.yml`** (PRs): builds, starts the site, audits `/`, `/makers`, and
   `/games/aci-series-1` three times on mobile, and warns below 95. It uploads reports
   to temporary public storage and links them in the job summary.
 
@@ -130,4 +131,28 @@ loudly if `package-lock.json` drifts from `package.json`. Locally, use `npm inst
 - npm audit reported zero vulnerabilities, including development dependencies. Package and lockfile dependencies match. Local documentation links resolve, workflow YAML parses, and generated caches and original capture-session files remain ignored.
 - Previous screenshot-release audit (not rerun for the navigation-only update): mobile Lighthouse, three local runs per page: home performance 63-73 (median 72), ACI 63-77 (median 69). Accessibility, best practices, and SEO were 100 on every run; layout shift was zero. The advisory 95 performance target is not met. Long main-thread tasks remain a performance follow-up; these measurements are local lab results, not Vercel field data. No scores or reports were uploaded.
 
-The required checks pass locally. GitHub Actions and Vercel will run after the changes are committed and pushed; neither remote run has been verified for this uncommitted revision. The workflow now runs the 33 site-owned browser scenarios, with external game availability checked separately as advisory.
+GitHub Actions and Vercel run after changes are committed and pushed. Local checks
+do not verify those remote runs. The required workflow excludes the external-game
+browser scenario; external game availability is checked separately as advisory.
+
+## Local release verification: November 12, 2026
+
+- Lint, TypeScript, formatting, all 16 unit tests, catalog/asset validation, and the
+  production build passed. The build statically renders `/makers` and all game pages.
+- All 49 browser scenarios and six documentation screenshot captures passed against
+  an isolated production server. CI runs the 48 site-owned scenarios; the live-game
+  scenario also passed locally, and the separate link check returned HTTP 200.
+- Every page fits 320px, 390px, and 768px viewports without horizontal overflow.
+  Maker profiles also pass at 1440px. Keyboard navigation, no-JavaScript maker
+  disclosures, reduced motion, touch swipes, and the five-second carousel's pause,
+  resume, and wraparound behavior are covered. Two 320px overflow issues in the
+  homepage cover deck and game share link were corrected.
+- Source/import and asset-reference reviews found no orphan source modules or unused
+  public assets. Strict unused-symbol checks found no project-source diagnostics.
+  Concept SVGs remain intentional cover-generation sources. Generated caches and
+  browser artifacts are ignored; the six documentation screenshots are intentional.
+- Local documentation links resolve, package and lockfile dependencies match, and
+  npm audit reports zero vulnerabilities, including development dependencies.
+- The performance measurements above remain historical; Lighthouse was not rerun
+  for this final revision. Its advisory 95 performance target remains a follow-up.
+  No commit, push, or remote deployment was performed during this verification.

@@ -12,7 +12,7 @@ export default defineConfig({
   reporter: "list",
   projects: [
     // Assertions about behavior. Run by `npm run test:browser`.
-    { name: "checks", testMatch: /(hub|navigation)\.spec\.ts/ },
+    { name: "checks", testMatch: /(hub|navigation|makers|carousel)\.spec\.ts/ },
     // Regenerates the README images in docs/. Run by `npm run screenshots`.
     { name: "screenshots", testMatch: /screenshots\.spec\.ts/ },
   ],

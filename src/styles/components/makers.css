@@ -1,0 +1,426 @@
+/* Makers directory: shared tokens, native disclosures, and real navigation. */
+@layer components {
+  .makers-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    align-items: center;
+    gap: 64px;
+    padding: 84px 0 56px;
+  }
+  .makers-intro h1 {
+    font-size: clamp(42px, 5.8vw, 82px);
+    line-height: 1.08;
+    letter-spacing: -0.065em;
+    margin: 24px 0;
+  }
+  .makers-intro h1 span {
+    color: var(--signal);
+  }
+  .makers-lead {
+    max-width: 610px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.8;
+  }
+  .makers-stamp {
+    border-left: 1px solid var(--line);
+    padding-left: 40px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .makers-stamp-art {
+    display: inline-flex;
+    color: var(--signal);
+    font-size: 70px;
+    margin-bottom: 24px;
+    transform: rotate(-12deg);
+  }
+  .makers-stamp strong {
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 24px;
+    margin-right: 12px;
+    font-weight: 400;
+  }
+  .makers-stamp > .label {
+    display: block;
+    margin-top: 22px;
+  }
+  .makers-index {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 80px;
+  }
+  .maker-jump {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 26px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    transition:
+      border-color 0.2s,
+      transform 0.25s var(--ease-out);
+  }
+  .maker-jump:hover,
+  .maker-jump:focus-visible {
+    border-color: var(--signal);
+  }
+  .maker-monogram {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 64px;
+    height: 72px;
+    border-radius: 10px;
+    background: var(--signal);
+    color: var(--on-accent);
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    transform: rotate(-7deg);
+    transition: transform 0.25s var(--ease-out);
+  }
+  .maker-jump:nth-child(even) .maker-monogram {
+    background: var(--ink);
+    transform: rotate(7deg);
+  }
+  .maker-jump-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+  .maker-jump-copy strong {
+    font-size: 23px;
+    letter-spacing: -0.04em;
+  }
+  .maker-jump-copy > span:last-child {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .maker-jump > .icon {
+    flex-shrink: 0;
+    margin-left: auto;
+    font-size: 24px;
+    color: var(--signal);
+  }
+  .maker-profile {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+    align-items: start;
+    gap: clamp(32px, 6vw, 96px);
+    padding: 64px 0 80px;
+    border-top: 1px solid var(--line-strong);
+    scroll-margin-top: 24px;
+  }
+  .maker-profile:focus {
+    outline: none;
+  }
+  .maker-profile:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 8px;
+  }
+  .maker-identity {
+    position: sticky;
+    top: 32px;
+  }
+  .maker-identity h2 {
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1.15;
+    letter-spacing: -0.055em;
+    margin: 18px 0;
+  }
+  .maker-role {
+    font-size: 14px;
+    color: var(--signal);
+  }
+  .maker-bio {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 24px;
+    max-width: 420px;
+  }
+  .maker-specialties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0;
+  }
+  .maker-specialties li {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .maker-profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--signal);
+  }
+  .maker-profile-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .maker-introduction {
+    font-size: 18px;
+    line-height: 1.85;
+    margin-bottom: 32px;
+  }
+  .maker-background {
+    border-top: 1px solid var(--line);
+  }
+  .maker-detail {
+    border-bottom: 1px solid var(--line);
+  }
+  .maker-detail summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    list-style: none;
+    padding: 22px 0;
+  }
+  .maker-detail summary::-webkit-details-marker {
+    display: none;
+  }
+  .maker-detail summary h3 {
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+  .maker-detail summary:hover {
+    color: var(--signal);
+  }
+  .maker-detail-toggle {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+  }
+  .maker-detail-toggle::before,
+  .maker-detail-toggle::after {
+    content: "";
+    position: absolute;
+    background: var(--signal);
+    left: 8px;
+    right: 8px;
+    top: 12px;
+    height: 1px;
+  }
+  .maker-detail-toggle::after {
+    transform: rotate(90deg);
+    transition: transform 0.2s;
+  }
+  .maker-detail[open] .maker-detail-toggle::after {
+    transform: rotate(0);
+  }
+  .maker-detail-content {
+    padding: 0 0 26px;
+  }
+  .maker-entry + .maker-entry {
+    margin-top: 26px;
+  }
+  .maker-entry h4 {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .maker-entry p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+    margin-top: 10px;
+  }
+  .maker-entry .maker-entry-meta {
+    color: var(--signal);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .maker-games {
+    margin-top: 40px;
+  }
+  .maker-games-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .maker-games h3 {
+    font-size: 20px;
+    letter-spacing: -0.03em;
+  }
+  .maker-game-list {
+    display: grid;
+    gap: 12px;
+  }
+  .maker-game {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    padding: 14px;
+    border-radius: 12px;
+    transition: border-color 0.2s;
+  }
+  .maker-game:hover,
+  .maker-game:focus-visible {
+    border-color: var(--game);
+  }
+  .maker-game-image {
+    width: 112px;
+    height: 84px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 6px;
+  }
+  .maker-game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s var(--ease-out);
+  }
+  .maker-game-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+  .maker-game-copy strong {
+    font-size: 17px;
+    letter-spacing: -0.025em;
+  }
+  .maker-game-copy > span:last-child {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .maker-game > .icon {
+    margin-left: auto;
+    flex-shrink: 0;
+    color: var(--game);
+  }
+  .makers-outro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    padding: 40px 0;
+    border-top: 1px solid var(--line);
+  }
+  .makers-outro h2 {
+    font-size: clamp(26px, 3vw, 40px);
+    letter-spacing: -0.04em;
+    margin-top: 12px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .maker-jump:hover,
+  .maker-jump:focus-visible {
+    transform: translateY(-4px);
+  }
+  .maker-jump:hover .maker-monogram,
+  .maker-jump:focus-visible .maker-monogram {
+    transform: rotate(0);
+  }
+  .maker-game:hover img,
+  .maker-game:focus-visible img {
+    transform: scale(1.05);
+  }
+}
+@media (max-width: 900px) {
+  .makers-intro {
+    gap: 32px;
+    grid-template-columns: minmax(0, 1fr) 210px;
+  }
+  .makers-stamp {
+    padding-left: 24px;
+  }
+  .maker-jump {
+    gap: 16px;
+    padding: 20px;
+  }
+  .maker-jump-copy strong {
+    font-size: 20px;
+  }
+  .maker-profile {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .maker-identity {
+    position: static;
+  }
+  .maker-bio {
+    max-width: 640px;
+  }
+}
+@media (max-width: 639px) {
+  .makers-intro {
+    grid-template-columns: 1fr;
+    padding: 48px 0 32px;
+    gap: 28px;
+  }
+  .makers-lead {
+    font-size: 16px;
+  }
+  .makers-stamp {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 20px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+  }
+  .makers-stamp-art {
+    display: none;
+  }
+  .makers-stamp > .label {
+    flex-basis: 100%;
+    margin-top: 8px;
+  }
+  .makers-index {
+    grid-template-columns: 1fr;
+    margin-bottom: 48px;
+  }
+  .maker-monogram {
+    width: 48px;
+    height: 56px;
+    font-size: 22px;
+  }
+  .maker-jump-copy strong {
+    font-size: 21px;
+  }
+  .maker-jump-copy .label {
+    font-size: 12px;
+  }
+  .maker-profile {
+    padding: 40px 0 48px;
+  }
+  .maker-introduction {
+    font-size: 16px;
+  }
+  .maker-game {
+    padding: 12px;
+    gap: 12px;
+  }
+  .maker-game-image {
+    width: 72px;
+    height: 80px;
+  }
+  .maker-game-copy strong {
+    font-size: 15px;
+  }
+  .makers-outro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -434,6 +434,13 @@
     margin-left: 0;
   }
 }
+@media (max-width: 359px) {
+  .cover-deck {
+    --step: 28px;
+    --tilt: 8deg;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cover-deck {
     --lift: 0px;

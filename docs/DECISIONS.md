@@ -9,12 +9,13 @@ behavior are described in [DESIGN.md](DESIGN.md).
   one game or developer.
 - **The hub never hosts a game.** Every Play now is a real link to the game's own site
   and opens in a new tab. So do the Source, GitHub, and share links on a game page.
-- **Creators are credited per game.** Names, bios, and contact links appear only on the
-  pages of the games they made, never on the shared pages.
+- **Creators are credited per game and on `/makers`.** Shared identities and links
+  live in `developers.ts`; extended profiles live in `makerProfiles.ts`. The directory
+  derives each maker's games from the catalog. Home and About retain the hub identity.
 - **Games:** ACI: Series 1 is live. Devil 2, Multi Player Obby, and Moon Sweeper are
   browser-first and coming soon.
-- **ACI: Series 1** is listed at version 1.7.6 with the feature list from its
-  repository. Its screenshots are real captures of the live build; see
+- **ACI: Series 1** is listed at version 1.8.0, as confirmed by Casey, with the existing
+  feature list. Its screenshots remain real captures of v1.7.6; see
   [ACI_CAPTURES.md](ACI_CAPTURES.md).
 - **Slugs stay** as `devil-game` and `untitled-obby` even though the titles changed, so
   links already shared keep working.
@@ -22,12 +23,18 @@ behavior are described in [DESIGN.md](DESIGN.md).
 
 ## Design and behavior
 
+- **Makers:** native disclosure sections provide depth without a client-side tab
+  system. Jump links use the shared navigation helper; hover/focus effects and
+  scroll reveals respect reduced motion. Public links share one component with game
+  credits. See [MAKERS.md](MAKERS.md) for content ownership and file structure.
+
 - **Cover deck:** a raised cover would hide the cover to its right, so that neighbor
   stacks just beneath it. Moving across the fan in either direction reaches every cover
   (covered by a browser test).
-- **Motion is one-shot or a response.** Entrances run once, sections reveal once on
-  scroll, and nothing loops. Reduced motion removes all of it, including when the
-  setting changes while the page is open.
+- **Decorative motion is one-shot or a response.** Entrances and section reveals run
+  once. The explicitly pausable hero slideshow advances every five seconds, with
+  hover/focus/touch/hidden-tab pauses. Reduced motion disables its timer and all
+  decorative motion, including when the setting changes while the page is open.
 - **Scroll reveal is safe by default.** Sections are only hidden after the reveal script
   runs, and only if they start below the fold, so nothing is hidden without JavaScript.
 - **Icons are SVG.** Unicode arrows and the asterisk are drawn as emoji on many phones.
@@ -46,8 +53,10 @@ behavior are described in [DESIGN.md](DESIGN.md).
 - **Quick look:** a dialog with a game's cover, pitch, key details, save action, and Play
   (or Coming soon), opened without leaving the library. It loads on demand and receives
   only a small public preview of each game, not the full catalog or developer profiles.
-- **Previews:** the feature image supports touch swipes, arrow keys, and previous/next
-  controls, with a crossfade once the next image has loaded.
+- **Previews:** the feature image supports touch swipes, arrow keys, numbered choices,
+  previous/next controls, and a Play/Pause control. A shared component provides the
+  same five-second carousel on the homepage and game details. Captions do not announce
+  automatic changes to screen readers. Numbered controls wrap at narrow widths.
 - **Pointer lighting:** library tiles get a small light and tilt that follow a mouse.
   Touch devices and reduced-motion visitors skip it.
 
@@ -93,8 +102,8 @@ Marked `TODO(casey)` in `src/content/` where they apply.
    rendered from `art/covers/`. Replace each `cover.webp` with a real capture when the
    game has one, then delete its SVG source.
 2. **Devil 2 genre:** empty until it's settled.
-3. **Trea's links and bio** (`src/content/developers.ts`): add them if he wants more than
-   a name and project credit.
+3. **Trea's public links** (`src/content/developers.ts`): add them if he supplies them.
+   His current bio and maker profile use the confirmed engineering and AI interests.
 4. **Which game Devil 2 remakes:** the copy stays general until that's confirmed. See
    [CONTENT_SOURCES.md](CONTENT_SOURCES.md).
 5. **Upcoming games:** add controls, screenshots, play URLs, versions, and dates as

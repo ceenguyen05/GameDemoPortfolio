@@ -12,5 +12,6 @@
 @import "./components/library.css";
 @import "./components/game-page.css";
 @import "./components/about.css";
+@import "./components/makers.css";
 @import "./components/interactions.css";
 @config "../../tailwind.config.ts";

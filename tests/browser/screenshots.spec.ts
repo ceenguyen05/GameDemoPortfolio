@@ -1,5 +1,27 @@
 import { test, expect, type Page } from "@playwright/test";
 
+for (const [label, width] of [
+  ["desktop", 1440],
+  ["mobile", 390],
+] as const) {
+  test(`docs/screenshot-makers-${label}.png: makers page`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/makers");
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      for (const img of document.images) img.loading = "eager";
+      await Promise.all(
+        [...document.images].map((img) => img.decode().catch(() => {})),
+      );
+    });
+    await page.screenshot({
+      path: `docs/screenshot-makers-${label}.png`,
+      fullPage: true,
+    });
+  });
+}
+
 // Regenerates the README images in docs/. Kept out of the default browser
 // suite so running tests never rewrites tracked files. Run after UI changes:
 //   npm run build && npm run screenshots

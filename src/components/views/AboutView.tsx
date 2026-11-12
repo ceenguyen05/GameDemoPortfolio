@@ -43,9 +43,15 @@ export function AboutView() {
             Different makers.
           </h2>
           <p>
-            Every game has its own page with credits, development notes, and the
-            creator’s public links. Feedback or a question about a game? That’s
-            the place to start.
+            Every game has its own page with credits and development notes. Get
+            to know the people behind them on{" "}
+            <Link
+              href="/makers"
+              className="underline underline-offset-4 hover:text-signal"
+            >
+              The makers
+            </Link>
+            , with their backgrounds, projects, and public links.
           </p>
         </div>
         <div>

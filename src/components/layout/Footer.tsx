@@ -22,6 +22,9 @@ export function Footer() {
           <Link prefetch={false} href="/about">
             About the collection <Arrow />
           </Link>
+          <Link prefetch={false} href="/makers">
+            Meet the makers <Arrow />
+          </Link>
         </div>
         <span className="footer-flower" aria-hidden="true">
           <Spark />

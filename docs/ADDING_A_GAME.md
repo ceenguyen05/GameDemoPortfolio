@@ -39,7 +39,7 @@ mark it with a TODO. Never guess controls, features, or dates.
 {
   slug: "my-game",
   title: "My Game",
-  developer: developers.casey, // add a new maker in src/content/developers.ts
+  developer: developers.casey, // shared maker identity; see MAKERS.md for new creators
   tagline: "One line that says what you do in it.",
   description: {
     short: "One or two sentences for cards and search results.",
@@ -106,6 +106,8 @@ In the running build, check:
 - **Play now** opens `playUrl` in a new tab, and `/play/my-game` redirects there.
 - `/games/my-game/opengraph-image` renders, and the game appears in ⌘K / Ctrl+K.
 - The page at 360px wide, and using only the keyboard.
+- `/makers` credits the game to the correct creator; the game-page maker link opens
+  their profile. See [MAKERS.md](MAKERS.md) for shared identities and extended bios.
 
 ## Retiring a placeholder
 

@@ -1,5 +1,7 @@
 import type { Developer } from "@/types/developer";
 import { Arrow } from "@/components/ui/Arrow";
+import { SiteLink } from "@/components/ui/SiteLink";
+import { DeveloperLinks } from "@/components/makers/DeveloperLinks";
 
 /** "Meet the maker": the developer of this game, with only the links they supplied. */
 export function DeveloperCard({ developer }: { developer: Developer }) {
@@ -21,29 +23,13 @@ export function DeveloperCard({ developer }: { developer: Developer }) {
         <p className="label text-muted">Meet the maker</p>
         <h2 id="developer-title">{developer.name}</h2>
         {developer.bio && <p className="developer-bio">{developer.bio}</p>}
-        <div className="developer-links">
-          {developer.githubUrl && (
-            <a
-              href={developer.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub <Arrow />
-            </a>
-          )}
-          {developer.email && (
-            <a href={`mailto:${developer.email}`}>{developer.email}</a>
-          )}
-          {developer.websiteUrl && (
-            <a
-              href={developer.websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Website <Arrow />
-            </a>
-          )}
-        </div>
+        <DeveloperLinks developer={developer} />
+        <SiteLink
+          href={`/makers#${developer.slug}`}
+          className="maker-profile-link"
+        >
+          More about {developer.name} <Arrow />
+        </SiteLink>
       </div>
     </section>
   );

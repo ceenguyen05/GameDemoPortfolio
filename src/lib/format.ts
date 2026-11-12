@@ -20,7 +20,7 @@ export function hostname(url: string): string {
   return new URL(url).hostname;
 }
 
-/** "https://github.com/ceenguyen05/ACI-SND" → "github.com/ceenguyen05/ACI-SND" */
+/** "https://github.com/ceenguyen05/ACI-Series1" → "github.com/ceenguyen05/ACI-Series1" */
 export function displayUrl(url: string): string {
   const { hostname: host, pathname } = new URL(url);
   return `${host}${pathname === "/" ? "" : pathname}`;

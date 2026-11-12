@@ -41,6 +41,13 @@ export function buildCommands(games: Game[]): Command[] {
       kind: "page",
     },
     {
+      id: "makers",
+      label: "The makers",
+      detail: "Page · Creator backgrounds and games",
+      href: "/makers",
+      kind: "page",
+    },
+    {
       id: "about",
       label: "About the collection",
       detail: "Page",

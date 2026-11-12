@@ -30,6 +30,9 @@ export function Header() {
           <Link prefetch={false} href="/about">
             The idea
           </Link>
+          <Link prefetch={false} href="/makers">
+            The makers
+          </Link>
         </nav>
         <CommandPalette commands={buildCommands(games)} />
       </div>
