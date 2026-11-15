@@ -199,7 +199,7 @@ test("redirects, 404s, metadata and static resources", async ({
 
   const html = await (await request.get("/games/aci-series-1")).text();
   expect(html).toContain(
-    '<link rel="canonical" href="https://gamedemoportfolio.vercel.app/games/aci-series-1"',
+    '<link rel="canonical" href="https://playroom-inc.vercel.app/games/aci-series-1"',
   );
   expect(html).toContain('property="og:title" content="ACI: Series 1"');
   expect(html).toContain("/games/aci-series-1/opengraph-image");
@@ -207,7 +207,7 @@ test("redirects, 404s, metadata and static resources", async ({
   expect(html).toContain('rel="manifest"');
   const sitemap = await (await request.get("/sitemap.xml")).text();
   expect(sitemap).toContain(
-    "https://gamedemoportfolio.vercel.app/games/moon-sweeper",
+    "https://playroom-inc.vercel.app/games/moon-sweeper",
   );
 });
 
@@ -305,7 +305,7 @@ test("sharing copies the game page and offers a fallback when clipboard access f
   await page.getByRole("button", { name: "Copy game link" }).click();
   await expect(page.getByRole("button", { name: "Link copied" })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    "https://gamedemoportfolio.vercel.app/games/aci-series-1",
+    "https://playroom-inc.vercel.app/games/aci-series-1",
   );
   await open(page, "/games/devil-game");
   await page.evaluate(() =>
@@ -321,7 +321,7 @@ test("sharing copies the game page and offers a fallback when clipboard access f
   await page.getByRole("button", { name: "Copy game link" }).click();
   const fallback = page.getByRole("textbox", { name: "Game page link" });
   await expect(fallback).toHaveValue(
-    "https://gamedemoportfolio.vercel.app/games/devil-game",
+    "https://playroom-inc.vercel.app/games/devil-game",
   );
   await fallback.focus();
   expect(

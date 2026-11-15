@@ -2,7 +2,7 @@
 
 **Small games. Good company.**
 
-**[Explore Playroom](https://gamedemoportfolio.vercel.app/)**
+**[Explore Playroom](https://playroom-inc.vercel.app/)**
 
 ![Playroom's homepage](docs/screenshot.png)
 

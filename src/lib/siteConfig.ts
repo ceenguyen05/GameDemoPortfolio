@@ -4,6 +4,6 @@ export const siteConfig = {
   description:
     "Small games. Good company. A shared collection of browser games to explore, pass around, and play.",
   url: (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://gamedemoportfolio.vercel.app"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://playroom-inc.vercel.app"
   ).replace(/\/+$/, ""),
 };

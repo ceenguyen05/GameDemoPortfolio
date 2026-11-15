@@ -1,7 +1,7 @@
 # Deploying
 
 The hub deploys through Vercel's Git integration: every push to `main` goes to
-production at <https://gamedemoportfolio.vercel.app>, and every pull request gets a
+production at <https://playroom-inc.vercel.app>, and every pull request gets a
 preview URL. No GitHub workflow deploys anything; CI only checks.
 
 ## Before pushing

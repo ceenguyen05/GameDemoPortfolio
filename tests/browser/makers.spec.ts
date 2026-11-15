@@ -145,11 +145,11 @@ test("makers page has canonical social metadata and a sitemap entry", async ({
   expect(response.status()).toBe(200);
   const html = await response.text();
   expect(html).toContain(
-    '<link rel="canonical" href="https://gamedemoportfolio.vercel.app/makers"',
+    '<link rel="canonical" href="https://playroom-inc.vercel.app/makers"',
   );
   expect(html).toContain('property="og:title" content="The makers"');
   expect(html).toContain('name="twitter:title" content="The makers"');
   expect(await (await request.get("/sitemap.xml")).text()).toContain(
-    "https://gamedemoportfolio.vercel.app/makers",
+    "https://playroom-inc.vercel.app/makers",
   );
 });
